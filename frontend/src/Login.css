@@ -1,0 +1,527 @@
+/* =========================================
+   CODETRACK LOGIN PAGE
+========================================= */
+
+* {
+    box-sizing: border-box;
+}
+
+.login-page {
+    min-height: 100vh;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    padding: 40px 20px;
+    background:
+            radial-gradient(
+                    circle at top left,
+                    #eef0ff 0%,
+                    transparent 38%
+            ),
+            radial-gradient(
+                    circle at bottom right,
+                    #f3efff 0%,
+                    transparent 38%
+            ),
+            #f7f8fc;
+}
+
+
+/* =========================================
+   MAIN CONTAINER
+========================================= */
+
+.login-container {
+    width: 100%;
+    max-width: 520px;
+    padding: 42px;
+    background: #ffffff;
+    border: 1px solid #e4e7f0;
+    border-radius: 22px;
+    box-shadow:
+            0 25px 70px rgba(35, 42, 80, 0.12);
+
+    text-align: center;
+}
+
+
+/* =========================================
+   LOGO
+========================================= */
+
+.login-logo {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 12px;
+}
+
+.login-logo-icon {
+    width: 48px;
+    height: 48px;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    background: linear-gradient(
+            135deg,
+            #5557d9,
+            #7044df
+    );
+
+    color: #ffffff;
+
+    border-radius: 13px;
+
+    font-size: 24px;
+    font-weight: 800;
+
+    box-shadow:
+            0 8px 20px rgba(91, 92, 226, 0.25);
+}
+
+.login-logo h1 {
+    margin: 0;
+
+    font-size: 29px;
+    font-weight: 750;
+
+    color: #172033;
+    letter-spacing: -0.5px;
+}
+
+.login-tagline {
+    margin: 9px 0 32px;
+
+    color: #858da0;
+
+    font-size: 12px;
+    letter-spacing: 1.4px;
+    text-transform: uppercase;
+}
+
+
+/* =========================================
+   HEADING
+========================================= */
+
+.login-container > h2 {
+    margin: 0 0 8px;
+
+    color: #172033;
+
+    font-size: 27px;
+    font-weight: 750;
+    letter-spacing: -0.4px;
+}
+
+.login-description {
+    margin: 0 0 26px;
+
+    color: #747d91;
+
+    font-size: 14px;
+}
+
+
+/* =========================================
+   STUDENT HEADER CARD
+========================================= */
+
+.role-card {
+    display: flex;
+    align-items: center;
+
+    gap: 15px;
+
+    width: 100%;
+
+    padding: 17px;
+
+    text-align: left;
+    text-decoration: none;
+
+    border-radius: 15px;
+
+    transition:
+            transform 0.2s ease,
+            box-shadow 0.2s ease,
+            border-color 0.2s ease;
+}
+
+
+/* Student card */
+
+.student-role {
+    margin-bottom: 22px;
+
+    background: #f7f7ff;
+
+    border: 1px solid #dedfff;
+}
+
+.student-role:hover {
+    transform: none;
+
+    box-shadow:
+            0 8px 24px rgba(80, 82, 180, 0.08);
+
+    border-color: #c9caf8;
+}
+
+
+/* =========================================
+   ROLE ICON
+========================================= */
+
+.role-icon {
+    width: 48px;
+    height: 48px;
+
+    flex-shrink: 0;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    background: #e9eaff;
+
+    border-radius: 12px;
+
+    font-size: 23px;
+}
+
+.student-role .role-icon {
+    background: #e8e9ff;
+}
+
+
+/* =========================================
+   ROLE CONTENT
+========================================= */
+
+.role-content {
+    flex: 1;
+}
+
+.role-content h3 {
+    margin: 0 0 4px;
+
+    color: #172033;
+
+    font-size: 17px;
+    font-weight: 700;
+}
+
+.role-content p {
+    margin: 0;
+
+    color: #747d91;
+
+    font-size: 12.5px;
+    line-height: 1.5;
+}
+
+
+/* =========================================
+   LOGIN FORM
+========================================= */
+
+.login-form {
+    width: 100%;
+
+    text-align: left;
+}
+
+
+/* =========================================
+   INPUT FIELD
+========================================= */
+
+.login-field {
+    margin-bottom: 17px;
+}
+
+.login-field label {
+    display: block;
+
+    margin-bottom: 7px;
+
+    color: #30384b;
+
+    font-size: 13px;
+    font-weight: 650;
+}
+
+.login-field input {
+    width: 100%;
+
+    height: 48px;
+
+    padding: 0 14px;
+
+    border: 1px solid #dfe2eb;
+    border-radius: 11px;
+
+    outline: none;
+
+    background: #ffffff;
+
+    color: #172033;
+
+    font-family: inherit;
+    font-size: 14px;
+
+    transition:
+            border-color 0.2s ease,
+            box-shadow 0.2s ease,
+            background 0.2s ease;
+}
+
+.login-field input::placeholder {
+    color: #a5abb8;
+}
+
+.login-field input:focus {
+    border-color: #6466df;
+
+    background: #fcfcff;
+
+    box-shadow:
+            0 0 0 3px rgba(100, 102, 223, 0.10);
+}
+
+
+/* =========================================
+   ERROR MESSAGE
+========================================= */
+
+.login-error {
+    margin: 5px 0 15px;
+
+    padding: 11px 13px;
+
+    border: 1px solid #f2caca;
+    border-radius: 9px;
+
+    background: #fff5f5;
+
+    color: #c43d3d;
+
+    font-size: 12.5px;
+    line-height: 1.4;
+
+    text-align: left;
+}
+
+
+/* =========================================
+   LOGIN BUTTON
+========================================= */
+
+.login-submit-button {
+    width: 100%;
+
+    height: 49px;
+
+    border: none;
+    border-radius: 11px;
+
+    background: linear-gradient(
+            135deg,
+            #595bdc,
+            #7045df
+    );
+
+    color: #ffffff;
+
+    font-family: inherit;
+    font-size: 14px;
+    font-weight: 700;
+
+    cursor: pointer;
+
+    box-shadow:
+            0 8px 20px rgba(91, 92, 226, 0.20);
+
+    transition:
+            transform 0.2s ease,
+            box-shadow 0.2s ease,
+            opacity 0.2s ease;
+}
+
+.login-submit-button:hover:not(:disabled) {
+    transform: translateY(-1px);
+
+    box-shadow:
+            0 11px 25px rgba(91, 92, 226, 0.28);
+}
+
+.login-submit-button:active:not(:disabled) {
+    transform: translateY(0);
+}
+
+.login-submit-button:disabled {
+    cursor: not-allowed;
+    opacity: 0.65;
+}
+
+
+/* =========================================
+   ADMIN SECTION
+========================================= */
+
+.admin-login-section {
+    margin-top: 25px;
+}
+
+
+/* Divider */
+
+.admin-divider {
+    display: flex;
+    align-items: center;
+
+    gap: 12px;
+
+    margin: 20px 0;
+}
+
+.admin-divider::before,
+.admin-divider::after {
+    content: "";
+
+    flex: 1;
+
+    height: 1px;
+
+    background: #e7e9ef;
+}
+
+.admin-divider span {
+    color: #9aa1b1;
+
+    font-size: 11px;
+    font-weight: 600;
+
+    letter-spacing: 1px;
+}
+
+
+/* Admin card */
+
+.admin-role {
+    background: #fafcfb;
+
+    border: 1px solid #dfe9e3;
+}
+
+.admin-role:hover {
+    transform: translateY(-2px);
+
+    border-color: #b9d8c6;
+
+    box-shadow:
+            0 9px 25px rgba(46, 155, 104, 0.08);
+}
+
+.admin-role .role-icon {
+    background: #e9f7ee;
+}
+
+.admin-role .role-content h3 {
+    color: #253b2e;
+}
+
+.admin-role .role-arrow {
+    font-size: 22px;
+    color: #2e9b68;
+    font-weight: 700;
+}
+
+
+/* =========================================
+   FOOTER
+========================================= */
+
+.login-footer {
+    margin: 28px 0 0;
+
+    color: #a0a6b4;
+
+    font-size: 11px;
+    letter-spacing: 0.2px;
+}
+
+
+/* =========================================
+   MOBILE
+========================================= */
+
+@media (max-width: 600px) {
+
+    .login-page {
+        padding: 20px 14px;
+    }
+
+    .login-container {
+        padding: 32px 22px;
+
+        border-radius: 18px;
+    }
+
+    .login-logo-icon {
+        width: 44px;
+        height: 44px;
+
+        font-size: 22px;
+    }
+
+    .login-logo h1 {
+        font-size: 26px;
+    }
+
+    .login-container > h2 {
+        font-size: 24px;
+    }
+
+    .role-card {
+        padding: 14px;
+    }
+
+    .role-icon {
+        width: 44px;
+        height: 44px;
+
+        font-size: 21px;
+    }
+
+    .role-content h3 {
+        font-size: 16px;
+    }
+
+    .role-content p {
+        font-size: 12px;
+    }
+}
+
+
+/* =========================================
+   VERY SMALL SCREENS
+========================================= */
+
+@media (max-width: 380px) {
+
+    .login-container {
+        padding: 28px 17px;
+    }
+
+    .login-container > h2 {
+        font-size: 22px;
+    }
+
+    .login-tagline {
+        margin-bottom: 25px;
+    }
+}

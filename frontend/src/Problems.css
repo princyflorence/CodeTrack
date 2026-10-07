@@ -1,0 +1,1350 @@
+/* =====================================================
+   CODETRACK - PROBLEMS PAGE
+   POLISHED UI
+===================================================== */
+
+* {
+    box-sizing: border-box;
+}
+
+html,
+body {
+    margin: 0;
+    padding: 0;
+}
+
+body {
+    background: #f6f7fb;
+}
+
+.problems-page {
+    min-height: 100vh;
+
+    background:
+            radial-gradient(
+                    circle at 10% 0%,
+                    rgba(99, 102, 241, 0.045),
+                    transparent 28%
+            ),
+            #f7f8fc;
+
+    color: #172033;
+
+    font-family:
+            "Segoe UI",
+            system-ui,
+            -apple-system,
+            BlinkMacSystemFont,
+            sans-serif;
+}
+
+
+/* =====================================================
+   NAVBAR
+===================================================== */
+
+.problems-navbar {
+    width: 100%;
+    height: 72px;
+
+    padding: 0 6%;
+
+    background: rgba(255, 255, 255, 0.94);
+
+    border-bottom: 1px solid #e7e9f0;
+
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+
+    position: sticky;
+    top: 0;
+
+    z-index: 100;
+
+    backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px);
+}
+
+
+/* =====================================================
+   LOGO
+===================================================== */
+
+.problems-logo {
+    display: flex;
+    align-items: center;
+
+    gap: 11px;
+
+    color: #172033;
+
+    text-decoration: none;
+
+    flex-shrink: 0;
+}
+
+.problems-logo-icon {
+    width: 40px;
+    height: 40px;
+
+    border-radius: 12px;
+
+    background:
+            linear-gradient(
+                    135deg,
+                    #4f46e5,
+                    #6366f1
+            );
+
+    color: #ffffff;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    font-size: 16px;
+    font-weight: 800;
+
+    box-shadow:
+            0 6px 18px rgba(79, 70, 229, 0.24);
+
+    transition:
+            transform 0.2s ease,
+            box-shadow 0.2s ease;
+}
+
+.problems-logo:hover .problems-logo-icon {
+    transform: translateY(-1px);
+
+    box-shadow:
+            0 8px 22px rgba(79, 70, 229, 0.30);
+}
+
+.problems-logo strong {
+    display: block;
+
+    color: #172033;
+
+    font-size: 18px;
+    font-weight: 750;
+
+    letter-spacing: -0.3px;
+
+    line-height: 1.1;
+}
+
+.problems-logo span {
+    display: block;
+
+    margin-top: 3px;
+
+    color: #9299a9;
+
+    font-size: 9px;
+
+    font-weight: 500;
+}
+
+
+/* =====================================================
+   NAVIGATION
+===================================================== */
+
+.problems-nav-links {
+    display: flex;
+    align-items: center;
+
+    gap: 34px;
+
+    margin-left: auto;
+    margin-right: 35px;
+}
+
+.problems-nav-links a {
+    position: relative;
+
+    padding: 27px 2px;
+
+    color: #747d90;
+
+    font-size: 13px;
+    font-weight: 650;
+
+    text-decoration: none;
+
+    transition:
+            color 0.2s ease,
+            transform 0.2s ease;
+}
+
+.problems-nav-links a:hover {
+    color: #5b5ce2;
+
+    transform: translateY(-1px);
+}
+
+.problems-nav-links a.active-link {
+    color: #5b5ce2;
+}
+
+.problems-nav-links a.active-link::after {
+    content: "";
+
+    position: absolute;
+
+    left: 0;
+    right: 0;
+
+    bottom: 0;
+
+    height: 3px;
+
+    background:
+            linear-gradient(
+                    90deg,
+                    #4f46e5,
+                    #7778f4
+            );
+
+    border-radius: 10px 10px 0 0;
+}
+
+
+/* =====================================================
+   PROFILE
+===================================================== */
+
+.problems-profile {
+    display: flex;
+    align-items: center;
+
+    gap: 10px;
+
+    flex-shrink: 0;
+}
+
+.problems-avatar {
+    width: 39px;
+    height: 39px;
+
+    border-radius: 50%;
+
+    background:
+            linear-gradient(
+                    135deg,
+                    #eeeeff,
+                    #e2e4ff
+            );
+
+    color: #5b5ce2;
+
+    border: 1px solid #dedfff;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    font-size: 14px;
+    font-weight: 800;
+
+    box-shadow:
+            0 3px 10px rgba(79, 70, 229, 0.08);
+}
+
+.problems-profile-info {
+    display: flex;
+    flex-direction: column;
+
+    gap: 2px;
+}
+
+.problems-profile-info strong {
+    color: #172033;
+
+    font-size: 12px;
+    font-weight: 700;
+
+    white-space: nowrap;
+}
+
+.problems-profile-info span {
+    color: #9299a9;
+
+    font-size: 10px;
+}
+
+
+/* =====================================================
+   SIGN OUT
+===================================================== */
+
+.switch-role {
+    padding: 9px 14px;
+
+    border: 1px solid #dfe2ea;
+
+    border-radius: 9px;
+
+    background: #ffffff;
+
+    color: #5b5ce2;
+
+    font-size: 11px;
+    font-weight: 750;
+
+    cursor: pointer;
+
+    transition:
+            background 0.2s ease,
+            border-color 0.2s ease,
+            transform 0.2s ease;
+}
+
+.switch-role:hover {
+    background: #f5f5ff;
+
+    border-color: #cfd1f2;
+
+    transform: translateY(-1px);
+}
+
+
+/* =====================================================
+   MAIN CONTAINER
+===================================================== */
+
+.problems-container {
+    width: 88%;
+    max-width: 1180px;
+
+    margin: 0 auto;
+
+    padding: 42px 0 65px;
+}
+
+
+/* =====================================================
+   HEADER
+===================================================== */
+
+.problems-header {
+    display: flex;
+
+    align-items: flex-end;
+    justify-content: space-between;
+
+    gap: 30px;
+
+    margin-bottom: 25px;
+}
+
+.problems-header-content {
+    min-width: 0;
+}
+
+.page-label {
+    margin: 0 0 9px;
+
+    color: #5b5ce2;
+
+    font-size: 10px;
+    font-weight: 850;
+
+    letter-spacing: 2px;
+}
+
+.problems-header h1 {
+    margin: 0 0 9px;
+
+    color: #172033;
+
+    font-size: 39px;
+    font-weight: 750;
+
+    line-height: 1.15;
+
+    letter-spacing: -1.1px;
+}
+
+.page-description {
+    margin: 0;
+
+    color: #747d90;
+
+    font-size: 14px;
+
+    line-height: 1.65;
+}
+
+.problem-count {
+    min-width: 112px;
+
+    padding: 17px 22px;
+
+    background: #ffffff;
+
+    border: 1px solid #e3e6ef;
+
+    border-radius: 14px;
+
+    text-align: center;
+
+    box-shadow:
+            0 5px 18px rgba(25, 35, 65, 0.035);
+}
+
+.problem-count strong {
+    display: block;
+
+    color: #5b5ce2;
+
+    font-size: 26px;
+    font-weight: 850;
+
+    line-height: 1;
+}
+
+.problem-count span {
+    display: block;
+
+    margin-top: 6px;
+
+    color: #8a91a1;
+
+    font-size: 10px;
+}
+
+
+/* =====================================================
+   FILTER BAR
+===================================================== */
+
+.problem-filter-bar {
+    display: flex;
+    align-items: center;
+
+    gap: 10px;
+
+    padding: 13px;
+
+    margin-bottom: 13px;
+
+    background: #ffffff;
+
+    border: 1px solid #e3e6ef;
+
+    border-radius: 15px;
+
+    box-shadow:
+            0 5px 20px rgba(25, 35, 65, 0.03);
+}
+
+.search-wrapper {
+    min-width: 0;
+
+    flex: 1;
+
+    height: 43px;
+
+    display: flex;
+    align-items: center;
+
+    border: 1px solid #dfe2e9;
+
+    border-radius: 9px;
+
+    background: #ffffff;
+
+    transition:
+            border-color 0.2s ease,
+            box-shadow 0.2s ease;
+}
+
+.search-wrapper:focus-within {
+    border-color: #5b5ce2;
+
+    box-shadow:
+            0 0 0 3px rgba(91, 92, 226, 0.08);
+}
+
+.search-icon {
+    padding-left: 13px;
+
+    font-size: 13px;
+
+    opacity: 0.75;
+}
+
+.search-wrapper input {
+    width: 100%;
+    height: 100%;
+
+    padding: 0 12px 0 8px;
+
+    border: none;
+    outline: none;
+
+    background: transparent;
+
+    color: #30384a;
+
+    font-size: 13px;
+}
+
+.search-wrapper input::placeholder {
+    color: #9aa1af;
+}
+
+.problem-filter-bar select {
+    width: 180px;
+    height: 43px;
+
+    padding: 0 12px;
+
+    border: 1px solid #dfe2e9;
+
+    border-radius: 9px;
+
+    background: #ffffff;
+
+    color: #30384a;
+
+    outline: none;
+
+    font-size: 12px;
+
+    cursor: pointer;
+
+    transition:
+            border-color 0.2s ease,
+            box-shadow 0.2s ease;
+}
+
+.problem-filter-bar select:focus {
+    border-color: #5b5ce2;
+
+    box-shadow:
+            0 0 0 3px rgba(91, 92, 226, 0.08);
+}
+
+.clear-filter-button {
+    height: 43px;
+
+    padding: 0 14px;
+
+    border: 1px solid #dedff1;
+
+    border-radius: 9px;
+
+    background: #f7f7ff;
+
+    color: #5b5ce2;
+
+    font-size: 11px;
+    font-weight: 750;
+
+    cursor: pointer;
+
+    white-space: nowrap;
+
+    transition:
+            background 0.2s ease,
+            transform 0.2s ease;
+}
+
+.clear-filter-button:hover {
+    background: #eeeeff;
+
+    transform: translateY(-1px);
+}
+
+
+/* =====================================================
+   RESULTS INFO
+===================================================== */
+
+.results-info {
+    min-height: 27px;
+
+    margin-bottom: 10px;
+
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+
+    gap: 15px;
+
+    color: #8a91a1;
+
+    font-size: 10px;
+}
+
+.results-info strong {
+    color: #5e6678;
+
+    font-weight: 750;
+}
+
+.filter-active {
+    padding: 5px 9px;
+
+    border-radius: 20px;
+
+    background: #f0f0ff;
+
+    color: #5b5ce2;
+
+    font-size: 9px;
+    font-weight: 750;
+}
+
+
+/* =====================================================
+   TABLE
+===================================================== */
+
+.problem-table-wrapper {
+    overflow: hidden;
+
+    background: #ffffff;
+
+    border: 1px solid #e3e6ef;
+
+    border-radius: 17px;
+
+    box-shadow:
+            0 7px 25px rgba(25, 35, 65, 0.04);
+}
+
+.problem-table {
+    width: 100%;
+
+    border-collapse: collapse;
+}
+
+.problem-table thead {
+    background:
+            linear-gradient(
+                    180deg,
+                    #fbfcff,
+                    #f8f9fc
+            );
+}
+
+.problem-table th {
+    padding: 15px 20px;
+
+    border-bottom: 1px solid #e6e8ef;
+
+    color: #858d9e;
+
+    text-align: left;
+
+    font-size: 9px;
+    font-weight: 850;
+
+    letter-spacing: 0.9px;
+
+    text-transform: uppercase;
+}
+
+.problem-table td {
+    padding: 18px 20px;
+
+    border-bottom: 1px solid #eef0f4;
+
+    color: #4d5668;
+
+    font-size: 12px;
+
+    vertical-align: middle;
+}
+
+.problem-table tbody tr {
+    transition:
+            background 0.18s ease,
+            transform 0.18s ease;
+}
+
+.problem-table tbody tr:hover {
+    background: #fafaff;
+}
+
+.problem-table tbody tr:last-child td {
+    border-bottom: none;
+}
+
+.number-column {
+    width: 65px;
+}
+
+.action-column {
+    width: 105px;
+}
+
+.problem-number {
+    color: #9aa1af;
+
+    font-size: 11px;
+
+    font-weight: 700;
+
+    font-variant-numeric: tabular-nums;
+}
+
+
+/* =====================================================
+   PROBLEM NAME
+===================================================== */
+
+.problem-name {
+    min-width: 200px;
+}
+
+.problem-name strong {
+    display: block;
+
+    margin-bottom: 4px;
+
+    color: #20283a;
+
+    font-size: 14px;
+    font-weight: 750;
+
+    line-height: 1.3;
+
+    transition: color 0.2s ease;
+}
+
+.problem-table tbody tr:hover .problem-name strong {
+    color: #514fd8;
+}
+
+.problem-name span {
+    color: #9aa1af;
+
+    font-size: 10px;
+}
+
+
+/* =====================================================
+   TOPIC BADGE
+===================================================== */
+
+.topic-badge {
+    display: inline-flex;
+    align-items: center;
+
+    padding: 6px 10px;
+
+    border: 1px solid #e1e1fa;
+
+    border-radius: 7px;
+
+    background: #f1f1ff;
+
+    color: #5556d4;
+
+    font-size: 10px;
+    font-weight: 750;
+
+    white-space: nowrap;
+}
+
+
+/* =====================================================
+   DIFFICULTY BADGES
+===================================================== */
+
+.difficulty-badge {
+    display: inline-flex;
+    align-items: center;
+
+    padding: 6px 10px;
+
+    border-radius: 7px;
+
+    font-size: 10px;
+    font-weight: 750;
+
+    white-space: nowrap;
+}
+
+.difficulty-badge.easy {
+    background: #eaf8f0;
+    border: 1px solid #d6efdf;
+    color: #278657;
+}
+
+.difficulty-badge.medium {
+    background: #fff5df;
+    border: 1px solid #f3e3bf;
+    color: #b47712;
+}
+
+.difficulty-badge.hard {
+    background: #ffeded;
+    border: 1px solid #f4d7d7;
+    color: #d34a4a;
+}
+
+
+/* =====================================================
+   STATUS
+===================================================== */
+
+.status-badge {
+    display: inline-flex;
+    align-items: center;
+
+    gap: 6px;
+
+    font-size: 10px;
+    font-weight: 700;
+
+    white-space: nowrap;
+}
+
+.status-dot {
+    font-size: 8px;
+}
+
+.status-badge.solved {
+    color: #278657;
+}
+
+.status-badge.solved .status-dot {
+    color: #36a269;
+}
+
+.status-badge.attempted {
+    color: #b47712;
+}
+
+.status-badge.attempted .status-dot {
+    color: #d39a34;
+}
+
+.status-badge.not-started {
+    color: #8a91a3;
+}
+
+.status-badge.not-started .status-dot {
+    color: #b0b5bf;
+}
+
+
+/* =====================================================
+   SOLVE / VIEW LINK
+===================================================== */
+
+.solve-link {
+    display: inline-flex;
+    align-items: center;
+
+    gap: 7px;
+
+    color: #5b5ce2;
+
+    font-size: 11px;
+    font-weight: 800;
+
+    text-decoration: none;
+
+    white-space: nowrap;
+
+    transition:
+            color 0.2s ease,
+            gap 0.2s ease;
+}
+
+.solve-link:hover {
+    color: #4338ca;
+
+    gap: 10px;
+}
+
+
+/* =====================================================
+   EMPTY STATE
+===================================================== */
+
+.empty-problems {
+    padding: 70px 25px;
+
+    background:
+            linear-gradient(
+                    135deg,
+                    #fafaff,
+                    #f9f9fd
+            );
+
+    text-align: center;
+}
+
+.empty-icon {
+    width: 58px;
+    height: 58px;
+
+    margin: 0 auto 15px;
+
+    border-radius: 16px;
+
+    background: #f0f0ff;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    font-size: 23px;
+
+    border: 1px solid #e1e1fa;
+}
+
+.empty-problems h3 {
+    margin: 0 0 7px;
+
+    color: #20283a;
+
+    font-size: 17px;
+}
+
+.empty-problems p {
+    max-width: 390px;
+
+    margin: 0 auto 18px;
+
+    color: #8a91a3;
+
+    font-size: 12px;
+
+    line-height: 1.6;
+}
+
+
+/* =====================================================
+   PRIMARY ACTION
+===================================================== */
+
+.primary-action-button {
+    padding: 10px 16px;
+
+    border: none;
+
+    border-radius: 9px;
+
+    background:
+            linear-gradient(
+                    135deg,
+                    #4f46e5,
+                    #6366f1
+            );
+
+    color: #ffffff;
+
+    font-size: 11px;
+    font-weight: 750;
+
+    cursor: pointer;
+
+    box-shadow:
+            0 6px 15px rgba(91, 92, 226, 0.18);
+
+    transition:
+            transform 0.2s ease,
+            box-shadow 0.2s ease;
+}
+
+.primary-action-button:hover {
+    transform: translateY(-2px);
+
+    box-shadow:
+            0 9px 20px rgba(91, 92, 226, 0.25);
+}
+
+
+/* =====================================================
+   LOADING
+===================================================== */
+
+.problems-loading {
+    min-height: 60vh;
+
+    display: flex;
+    flex-direction: column;
+
+    align-items: center;
+    justify-content: center;
+
+    text-align: center;
+}
+
+.loading-spinner {
+    width: 36px;
+    height: 36px;
+
+    margin-bottom: 18px;
+
+    border: 3px solid #e5e7ef;
+
+    border-top-color: #5b5ce2;
+
+    border-radius: 50%;
+
+    animation:
+            problems-spin 0.8s linear infinite;
+}
+
+@keyframes problems-spin {
+    to {
+        transform: rotate(360deg);
+    }
+}
+
+.problems-loading h2 {
+    margin: 0 0 7px;
+
+    color: #20283a;
+
+    font-size: 19px;
+}
+
+.problems-loading p {
+    margin: 0;
+
+    color: #858d9d;
+
+    font-size: 12px;
+}
+
+
+/* =====================================================
+   ERROR
+===================================================== */
+
+.problems-error {
+    min-height: 60vh;
+
+    display: flex;
+    flex-direction: column;
+
+    align-items: center;
+    justify-content: center;
+
+    text-align: center;
+}
+
+.error-icon {
+    width: 52px;
+    height: 52px;
+
+    margin-bottom: 15px;
+
+    border-radius: 50%;
+
+    background: #fff0f0;
+
+    border: 1px solid #f4d9d9;
+
+    color: #d53d3d;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    font-size: 21px;
+    font-weight: 850;
+}
+
+.problems-error h1 {
+    margin: 0 0 8px;
+
+    color: #20283a;
+
+    font-size: 24px;
+}
+
+.problems-error p {
+    max-width: 470px;
+
+    margin: 0 0 20px;
+
+    color: #7c8495;
+
+    font-size: 12px;
+
+    line-height: 1.6;
+}
+
+
+/* =====================================================
+   FOOTER
+===================================================== */
+
+.problems-footer {
+    min-height: 68px;
+
+    padding: 20px 6%;
+
+    background: #ffffff;
+
+    border-top: 1px solid #e5e8ef;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    gap: 8px;
+
+    color: #9299a9;
+
+    font-size: 10px;
+
+    text-align: center;
+}
+
+
+/* =====================================================
+   RESPONSIVE - 1050px
+===================================================== */
+
+@media (max-width: 1050px) {
+
+    .problems-navbar {
+        padding: 0 4%;
+    }
+
+    .problems-container {
+        width: 92%;
+    }
+
+    .problems-nav-links {
+        gap: 22px;
+
+        margin-right: 20px;
+    }
+
+    .problem-filter-bar select {
+        width: 160px;
+    }
+}
+
+
+/* =====================================================
+   RESPONSIVE - 850px
+===================================================== */
+
+@media (max-width: 850px) {
+
+    .problems-navbar {
+        padding: 12px 5%;
+
+        height: auto;
+
+        min-height: 70px;
+
+        flex-wrap: wrap;
+
+        gap: 12px;
+    }
+
+    .problems-nav-links {
+        order: 3;
+
+        width: 100%;
+
+        margin: 0;
+
+        justify-content: center;
+    }
+
+    .problems-nav-links a {
+        padding: 7px 0;
+    }
+
+    .problems-nav-links a.active-link::after {
+        bottom: -3px;
+    }
+
+    .problems-container {
+        width: 90%;
+
+        padding-top: 32px;
+    }
+
+    .problems-header h1 {
+        font-size: 34px;
+    }
+
+    .problem-filter-bar {
+        flex-wrap: wrap;
+    }
+
+    .search-wrapper {
+        width: 100%;
+
+        flex-basis: 100%;
+    }
+
+    .problem-filter-bar select {
+        flex: 1;
+
+        width: auto;
+    }
+
+    .problem-table-wrapper {
+        overflow-x: auto;
+    }
+
+    .problem-table {
+        min-width: 820px;
+    }
+}
+
+
+/* =====================================================
+   RESPONSIVE - 650px
+===================================================== */
+
+@media (max-width: 650px) {
+
+    .problems-profile-info {
+        display: none;
+    }
+
+    .problems-profile {
+        margin-left: auto;
+    }
+
+    .problems-profile .switch-role {
+        padding: 8px 11px;
+    }
+
+    .problems-header {
+        align-items: flex-start;
+
+        flex-direction: column;
+
+        gap: 18px;
+    }
+
+    .problem-count {
+        align-self: flex-start;
+    }
+
+    .problem-filter-bar {
+        flex-direction: column;
+
+        align-items: stretch;
+    }
+
+    .search-wrapper {
+        width: 100%;
+
+        flex-basis: auto;
+    }
+
+    .problem-filter-bar select {
+        width: 100%;
+    }
+
+    .clear-filter-button {
+        width: 100%;
+    }
+
+    .results-info {
+        align-items: flex-start;
+
+        flex-direction: column;
+
+        gap: 7px;
+    }
+
+    .problems-footer {
+        flex-direction: column;
+
+        gap: 4px;
+    }
+}
+
+
+/* =====================================================
+   RESPONSIVE - 450px
+===================================================== */
+
+@media (max-width: 450px) {
+
+    .problems-navbar {
+        padding: 12px 5%;
+    }
+
+    .problems-logo-icon {
+        width: 37px;
+        height: 37px;
+    }
+
+    .problems-logo strong {
+        font-size: 16px;
+    }
+
+    .problems-logo span {
+        font-size: 8px;
+    }
+
+    .problems-nav-links {
+        gap: 22px;
+    }
+
+    .problems-nav-links a {
+        font-size: 11px;
+    }
+
+    .problems-container {
+        width: 90%;
+
+        padding-top: 25px;
+    }
+
+    .problems-header h1 {
+        font-size: 29px;
+    }
+
+    .page-description {
+        font-size: 13px;
+    }
+
+    .problem-count {
+        padding: 14px 19px;
+    }
+
+    .problem-count strong {
+        font-size: 23px;
+    }
+
+    .problem-table-wrapper {
+        border-radius: 13px;
+    }
+
+    .empty-problems {
+        padding: 55px 18px;
+    }
+}
+
+
+/* =====================================================
+   REDUCED MOTION
+===================================================== */
+
+@media (prefers-reduced-motion: reduce) {
+
+    *,
+    *::before,
+    *::after {
+        scroll-behavior: auto !important;
+
+        transition-duration: 0.01ms !important;
+
+        animation-duration: 0.01ms !important;
+    }
+}
