@@ -1,6 +1,8 @@
 import { useState } from "react";
 import { Link } from "react-router-dom";
 
+const API_BASE_URL = "https://codetrack-backend-l3s6.onrender.com";
+
 function AddProblem() {
     const [title, setTitle] = useState("");
     const [topic, setTopic] = useState("");
@@ -11,6 +13,7 @@ function AddProblem() {
     const [constraints, setConstraints] = useState("");
     const [sampleInput, setSampleInput] = useState("");
     const [sampleOutput, setSampleOutput] = useState("");
+    const [isSubmitting, setIsSubmitting] = useState(false);
 
     const handleSubmit = async (e) => {
         e.preventDefault();
@@ -24,12 +27,14 @@ function AddProblem() {
             outputFormat,
             constraints,
             sampleInput,
-            sampleOutput
+            sampleOutput,
         };
+
+        setIsSubmitting(true);
 
         try {
             const response = await fetch(
-                "http://localhost:8080/api/problems",
+                `${API_BASE_URL}/api/problems`,
                 {
                     method: "POST",
                     headers: {
@@ -41,7 +46,9 @@ function AddProblem() {
 
             if (!response.ok) {
                 const message = await response.text();
-                throw new Error(message || "Failed to add problem");
+                throw new Error(
+                    message || `Request failed (${response.status})`
+                );
             }
 
             alert("Problem added successfully!");
@@ -55,241 +62,126 @@ function AddProblem() {
             setConstraints("");
             setSampleInput("");
             setSampleOutput("");
-
         } catch (error) {
-            console.error(error);
+            console.error("Error adding problem:", error);
 
             alert(
-                "Failed to add problem.\n\nMake sure the backend is running."
+                `Failed to add problem: ${error.message}\n\n` +
+                "Please check that the backend is running and " +
+                "the API endpoint is configured correctly."
             );
+        } finally {
+            setIsSubmitting(false);
         }
     };
 
     return (
         <div className="app">
-
             {/* NAVBAR */}
-
             <nav className="navbar">
-
                 <div className="logo">
-
-                    <div className="logo-icon">
-                        C
-                    </div>
-
-                    <span>
-                        CodeTrack
-                    </span>
-
+                    <div className="logo-icon">C</div>
+                    <span>CodeTrack</span>
                 </div>
 
                 <div className="nav-links">
-
-                    <Link to="/admin">
-                        Dashboard
-                    </Link>
-
-                    <Link to="/admin/problems">
-                        Problems
-                    </Link>
-
-                    <Link to="/students">
-                        Students
-                    </Link>
-
+                    <Link to="/admin">Dashboard</Link>
+                    <Link to="/admin/problems">Problems</Link>
+                    <Link to="/students">Students</Link>
                 </div>
 
-                <button className="profile-button">
+                <button type="button" className="profile-button">
                     Profile
                 </button>
-
             </nav>
 
-
             {/* HERO */}
-
             <section className="hero-section">
-
                 <div className="hero-content">
-
-                    <p className="welcome-text">
-                        CODETRACK ADMIN
-                    </p>
-
-                    <h1>
-                        Add Problem
-                    </h1>
-
+                    <p className="welcome-text">CODETRACK ADMIN</p>
+                    <h1>Add Problem</h1>
                     <p className="hero-description">
                         Create a new coding problem for students.
                     </p>
-
                 </div>
-
             </section>
 
-
             {/* FORM */}
-
             <section
                 className="problems-section"
                 style={{
                     display: "flex",
                     justifyContent: "center",
                     paddingTop: "50px",
-                    paddingBottom: "70px"
+                    paddingBottom: "70px",
                 }}
             >
-
                 <div
                     className="problem-card"
                     style={{
                         width: "100%",
-                        maxWidth: "700px"
+                        maxWidth: "700px",
                     }}
                 >
-
                     <h2 style={{ marginBottom: "30px" }}>
                         Problem Details
                     </h2>
 
                     <form onSubmit={handleSubmit}>
-
-                        {/* TITLE */}
-
                         <div style={{ marginBottom: "25px" }}>
-
                             <label
                                 style={{
                                     display: "block",
                                     marginBottom: "8px",
-                                    fontWeight: "600"
+                                    fontWeight: "600",
                                 }}
                             >
                                 Problem Title
                             </label>
-
                             <input
                                 type="text"
                                 placeholder="Enter problem title"
                                 value={title}
-                                onChange={(e) =>
-                                    setTitle(e.target.value)
-                                }
+                                onChange={(e) => setTitle(e.target.value)}
                                 required
-                                style={{
-                                    width: "100%",
-                                    padding: "14px",
-                                    borderRadius: "10px",
-                                    border: "1px solid #ccc",
-                                    fontSize: "15px",
-                                    boxSizing: "border-box",
-                                    outline: "none"
-                                }}
+                                style={inputStyle}
                             />
-
                         </div>
 
-
-                        {/* TOPIC */}
-
                         <div style={{ marginBottom: "25px" }}>
-
-                            <label
-                                style={{
-                                    display: "block",
-                                    marginBottom: "8px",
-                                    fontWeight: "600"
-                                }}
-                            >
-                                Topic
-                            </label>
-
+                            <label style={labelStyle}>Topic</label>
                             <input
                                 type="text"
                                 placeholder="Example: Arrays"
                                 value={topic}
-                                onChange={(e) =>
-                                    setTopic(e.target.value)
-                                }
+                                onChange={(e) => setTopic(e.target.value)}
                                 required
-                                style={{
-                                    width: "100%",
-                                    padding: "14px",
-                                    borderRadius: "10px",
-                                    border: "1px solid #ccc",
-                                    fontSize: "15px",
-                                    boxSizing: "border-box",
-                                    outline: "none"
-                                }}
+                                style={inputStyle}
                             />
-
                         </div>
 
-
-                        {/* DIFFICULTY */}
-
                         <div style={{ marginBottom: "25px" }}>
-
-                            <label
-                                style={{
-                                    display: "block",
-                                    marginBottom: "8px",
-                                    fontWeight: "600"
-                                }}
-                            >
-                                Difficulty
-                            </label>
-
+                            <label style={labelStyle}>Difficulty</label>
                             <select
                                 value={difficulty}
                                 onChange={(e) =>
                                     setDifficulty(e.target.value)
                                 }
                                 style={{
-                                    width: "100%",
-                                    padding: "14px",
-                                    borderRadius: "10px",
-                                    border: "1px solid #ccc",
-                                    fontSize: "15px",
-                                    boxSizing: "border-box",
+                                    ...inputStyle,
                                     background: "white",
-                                    outline: "none"
                                 }}
                             >
-
-                                <option value="Easy">
-                                    Easy
-                                </option>
-
-                                <option value="Medium">
-                                    Medium
-                                </option>
-
-                                <option value="Hard">
-                                    Hard
-                                </option>
-
+                                <option value="Easy">Easy</option>
+                                <option value="Medium">Medium</option>
+                                <option value="Hard">Hard</option>
                             </select>
-
                         </div>
 
-
-                        {/* DESCRIPTION */}
-
                         <div style={{ marginBottom: "25px" }}>
-
-                            <label
-                                style={{
-                                    display: "block",
-                                    marginBottom: "8px",
-                                    fontWeight: "600"
-                                }}
-                            >
+                            <label style={labelStyle}>
                                 Problem Description
                             </label>
-
                             <textarea
                                 placeholder="Enter the complete problem description"
                                 value={description}
@@ -297,37 +189,13 @@ function AddProblem() {
                                     setDescription(e.target.value)
                                 }
                                 required
-                                rows="6"
-                                style={{
-                                    width: "100%",
-                                    padding: "14px",
-                                    borderRadius: "10px",
-                                    border: "1px solid #ccc",
-                                    fontSize: "15px",
-                                    boxSizing: "border-box",
-                                    resize: "vertical",
-                                    fontFamily: "inherit",
-                                    outline: "none"
-                                }}
+                                rows={6}
+                                style={textareaStyle}
                             />
-
                         </div>
 
-
-                        {/* INPUT FORMAT */}
-
                         <div style={{ marginBottom: "25px" }}>
-
-                            <label
-                                style={{
-                                    display: "block",
-                                    marginBottom: "8px",
-                                    fontWeight: "600"
-                                }}
-                            >
-                                Input Format
-                            </label>
-
+                            <label style={labelStyle}>Input Format</label>
                             <textarea
                                 placeholder="Example: First line contains an integer N..."
                                 value={inputFormat}
@@ -335,37 +203,13 @@ function AddProblem() {
                                     setInputFormat(e.target.value)
                                 }
                                 required
-                                rows="4"
-                                style={{
-                                    width: "100%",
-                                    padding: "14px",
-                                    borderRadius: "10px",
-                                    border: "1px solid #ccc",
-                                    fontSize: "15px",
-                                    boxSizing: "border-box",
-                                    resize: "vertical",
-                                    fontFamily: "inherit",
-                                    outline: "none"
-                                }}
+                                rows={4}
+                                style={textareaStyle}
                             />
-
                         </div>
 
-
-                        {/* OUTPUT FORMAT */}
-
                         <div style={{ marginBottom: "25px" }}>
-
-                            <label
-                                style={{
-                                    display: "block",
-                                    marginBottom: "8px",
-                                    fontWeight: "600"
-                                }}
-                            >
-                                Output Format
-                            </label>
-
+                            <label style={labelStyle}>Output Format</label>
                             <textarea
                                 placeholder="Example: Print the required answer..."
                                 value={outputFormat}
@@ -373,37 +217,13 @@ function AddProblem() {
                                     setOutputFormat(e.target.value)
                                 }
                                 required
-                                rows="4"
-                                style={{
-                                    width: "100%",
-                                    padding: "14px",
-                                    borderRadius: "10px",
-                                    border: "1px solid #ccc",
-                                    fontSize: "15px",
-                                    boxSizing: "border-box",
-                                    resize: "vertical",
-                                    fontFamily: "inherit",
-                                    outline: "none"
-                                }}
+                                rows={4}
+                                style={textareaStyle}
                             />
-
                         </div>
 
-
-                        {/* CONSTRAINTS */}
-
                         <div style={{ marginBottom: "25px" }}>
-
-                            <label
-                                style={{
-                                    display: "block",
-                                    marginBottom: "8px",
-                                    fontWeight: "600"
-                                }}
-                            >
-                                Constraints
-                            </label>
-
+                            <label style={labelStyle}>Constraints</label>
                             <textarea
                                 placeholder="Example: 1 ≤ N ≤ 100000"
                                 value={constraints}
@@ -411,37 +231,13 @@ function AddProblem() {
                                     setConstraints(e.target.value)
                                 }
                                 required
-                                rows="5"
-                                style={{
-                                    width: "100%",
-                                    padding: "14px",
-                                    borderRadius: "10px",
-                                    border: "1px solid #ccc",
-                                    fontSize: "15px",
-                                    boxSizing: "border-box",
-                                    resize: "vertical",
-                                    fontFamily: "inherit",
-                                    outline: "none"
-                                }}
+                                rows={5}
+                                style={textareaStyle}
                             />
-
                         </div>
 
-
-                        {/* SAMPLE INPUT */}
-
                         <div style={{ marginBottom: "25px" }}>
-
-                            <label
-                                style={{
-                                    display: "block",
-                                    marginBottom: "8px",
-                                    fontWeight: "600"
-                                }}
-                            >
-                                Sample Input
-                            </label>
-
+                            <label style={labelStyle}>Sample Input</label>
                             <textarea
                                 placeholder="Enter sample input"
                                 value={sampleInput}
@@ -449,37 +245,16 @@ function AddProblem() {
                                     setSampleInput(e.target.value)
                                 }
                                 required
-                                rows="4"
+                                rows={4}
                                 style={{
-                                    width: "100%",
-                                    padding: "14px",
-                                    borderRadius: "10px",
-                                    border: "1px solid #ccc",
-                                    fontSize: "15px",
-                                    boxSizing: "border-box",
-                                    resize: "vertical",
+                                    ...textareaStyle,
                                     fontFamily: "monospace",
-                                    outline: "none"
                                 }}
                             />
-
                         </div>
 
-
-                        {/* SAMPLE OUTPUT */}
-
                         <div style={{ marginBottom: "30px" }}>
-
-                            <label
-                                style={{
-                                    display: "block",
-                                    marginBottom: "8px",
-                                    fontWeight: "600"
-                                }}
-                            >
-                                Sample Output
-                            </label>
-
+                            <label style={labelStyle}>Sample Output</label>
                             <textarea
                                 placeholder="Enter sample output"
                                 value={sampleOutput}
@@ -487,51 +262,57 @@ function AddProblem() {
                                     setSampleOutput(e.target.value)
                                 }
                                 required
-                                rows="4"
+                                rows={4}
                                 style={{
-                                    width: "100%",
-                                    padding: "14px",
-                                    borderRadius: "10px",
-                                    border: "1px solid #ccc",
-                                    fontSize: "15px",
-                                    boxSizing: "border-box",
-                                    resize: "vertical",
+                                    ...textareaStyle,
                                     fontFamily: "monospace",
-                                    outline: "none"
                                 }}
                             />
-
                         </div>
-
-
-                        {/* SUBMIT */}
 
                         <button
                             type="submit"
                             className="solve-button"
+                            disabled={isSubmitting}
                         >
-                            Add Problem →
+                            {isSubmitting
+                                ? "Adding Problem..."
+                                : "Add Problem →"}
                         </button>
-
                     </form>
-
                 </div>
-
             </section>
 
-
             {/* FOOTER */}
-
             <footer>
-
                 <p>
                     © 2026 CodeTrack. Built for better coding progress.
                 </p>
-
             </footer>
-
         </div>
     );
 }
+
+const labelStyle = {
+    display: "block",
+    marginBottom: "8px",
+    fontWeight: "600",
+};
+
+const inputStyle = {
+    width: "100%",
+    padding: "14px",
+    borderRadius: "10px",
+    border: "1px solid #ccc",
+    fontSize: "15px",
+    boxSizing: "border-box",
+    outline: "none",
+};
+
+const textareaStyle = {
+    ...inputStyle,
+    resize: "vertical",
+    fontFamily: "inherit",
+};
 
 export default AddProblem;
