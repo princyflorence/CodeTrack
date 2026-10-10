@@ -2,6 +2,8 @@ import { useEffect, useState } from "react";
 import { Link, Navigate, useNavigate } from "react-router-dom";
 import "./Problems.css";
 
+const API_BASE_URL = "https://codetrack-backend-l3s6.onrender.com";
+
 function Problems() {
     const navigate = useNavigate();
 
@@ -59,36 +61,36 @@ function Problems() {
                 setError("");
 
                 const problemsResponse = await fetch(
-                    "http://localhost:8080/api/problems"
+                    `${API_BASE_URL}/api/problems`
                 );
 
                 if (!problemsResponse.ok) {
-                    throw new Error(
-                        "Unable to load problems"
-                    );
+                    throw new Error("Unable to load problems");
                 }
 
-                const problemsData =
-                    await problemsResponse.json();
+                const problemsData = await problemsResponse.json();
 
-                setProblems(problemsData);
+                setProblems(
+                    Array.isArray(problemsData) ? problemsData : []
+                );
 
                 /*
                  * Only students need student progress.
                  * Admin should NOT call the student endpoint.
                  */
                 if (isStudent) {
-                    const studentProblemsResponse =
-                        await fetch(
-                            `http://localhost:8080/api/student-problems/student/${studentId}`
-                        );
+                    const studentProblemsResponse = await fetch(
+                        `${API_BASE_URL}/api/student-problems/student/${studentId}`
+                    );
 
                     if (studentProblemsResponse.ok) {
                         const studentProblemsData =
                             await studentProblemsResponse.json();
 
                         setStudentProblems(
-                            studentProblemsData
+                            Array.isArray(studentProblemsData)
+                                ? studentProblemsData
+                                : []
                         );
                     } else {
                         setStudentProblems([]);
@@ -97,13 +99,10 @@ function Problems() {
                     setStudentProblems([]);
                 }
             } catch (error) {
-                console.error(
-                    "Error loading problems:",
-                    error
-                );
+                console.error("Error loading problems:", error);
 
                 setError(
-                    "Unable to load problems. Please check whether the backend is running."
+                    "Unable to load problems. Please check your internet connection and try again."
                 );
             } finally {
                 setLoading(false);
@@ -133,28 +132,25 @@ function Problems() {
        FILTER PROBLEMS
     ========================================= */
 
-    const filteredProblems = problems.filter(
-        (problem) => {
-            const matchesSearch =
-                problem.title
-                    ?.toLowerCase()
-                    .includes(search.toLowerCase());
+    const filteredProblems = problems.filter((problem) => {
+        const matchesSearch = problem.title
+            ?.toLowerCase()
+            .includes(search.toLowerCase());
 
-            const matchesDifficulty =
-                difficulty === "All" ||
-                problem.difficulty === difficulty;
+        const matchesDifficulty =
+            difficulty === "All" ||
+            problem.difficulty === difficulty;
 
-            const matchesTopic =
-                topic === "All" ||
-                problem.topic === topic;
+        const matchesTopic =
+            topic === "All" ||
+            problem.topic === topic;
 
-            return (
-                matchesSearch &&
-                matchesDifficulty &&
-                matchesTopic
-            );
-        }
-    );
+        return (
+            matchesSearch &&
+            matchesDifficulty &&
+            matchesTopic
+        );
+    });
 
     /* =========================================
        GET STUDENT PROBLEM STATUS
@@ -165,21 +161,16 @@ function Problems() {
             return "NOT_ATTEMPTED";
         }
 
-        const studentProblem =
-            studentProblems.find(
-                (item) =>
-                    String(item.problemId) ===
-                    String(problemId)
-            );
+        const studentProblem = studentProblems.find(
+            (item) =>
+                String(item.problemId) === String(problemId)
+        );
 
         if (!studentProblem) {
             return "NOT_ATTEMPTED";
         }
 
-        return (
-            studentProblem.status ||
-            "NOT_ATTEMPTED"
-        );
+        return studentProblem.status || "NOT_ATTEMPTED";
     };
 
     /* =========================================
@@ -250,9 +241,7 @@ function Problems() {
     if (loading) {
         return (
             <div className="problems-page">
-
                 <nav className="problems-navbar">
-
                     <Link
                         to={dashboardPath}
                         className="problems-logo"
@@ -262,37 +251,24 @@ function Problems() {
                         </div>
 
                         <div>
-                            <strong>
-                                CodeTrack
-                            </strong>
-
-                            <span>
-                                Practice • Learn • Grow
-                            </span>
+                            <strong>CodeTrack</strong>
+                            <span>Practice • Learn • Grow</span>
                         </div>
                     </Link>
-
                 </nav>
 
                 <main className="problems-container">
-
                     <div className="problems-loading">
-
                         <div className="loading-spinner"></div>
 
-                        <h2>
-                            Loading problems
-                        </h2>
+                        <h2>Loading problems</h2>
 
                         <p>
                             Please wait while we prepare
                             your coding practice.
                         </p>
-
                     </div>
-
                 </main>
-
             </div>
         );
     }
@@ -304,9 +280,7 @@ function Problems() {
     if (error) {
         return (
             <div className="problems-page">
-
                 <nav className="problems-navbar">
-
                     <Link
                         to={dashboardPath}
                         className="problems-logo"
@@ -316,13 +290,8 @@ function Problems() {
                         </div>
 
                         <div>
-                            <strong>
-                                CodeTrack
-                            </strong>
-
-                            <span>
-                                Practice • Learn • Grow
-                            </span>
+                            <strong>CodeTrack</strong>
+                            <span>Practice • Learn • Grow</span>
                         </div>
                     </Link>
 
@@ -333,39 +302,25 @@ function Problems() {
                     >
                         Sign Out
                     </button>
-
                 </nav>
 
                 <main className="problems-container">
-
                     <div className="problems-error">
+                        <div className="error-icon">!</div>
 
-                        <div className="error-icon">
-                            !
-                        </div>
+                        <h1>Unable to load problems</h1>
 
-                        <h1>
-                            Unable to load problems
-                        </h1>
-
-                        <p>
-                            {error}
-                        </p>
+                        <p>{error}</p>
 
                         <button
                             type="button"
                             className="primary-action-button"
-                            onClick={() =>
-                                window.location.reload()
-                            }
+                            onClick={() => window.location.reload()}
                         >
                             Try Again
                         </button>
-
                     </div>
-
                 </main>
-
             </div>
         );
     }
@@ -376,13 +331,9 @@ function Problems() {
 
     return (
         <div className="problems-page">
-
-            {/* =========================
-                NAVBAR
-            ========================= */}
+            {/* NAVBAR */}
 
             <nav className="problems-navbar">
-
                 <Link
                     to={dashboardPath}
                     className="problems-logo"
@@ -392,31 +343,15 @@ function Problems() {
                     </div>
 
                     <div>
-                        <strong>
-                            CodeTrack
-                        </strong>
-
-                        <span>
-                            Practice • Learn • Grow
-                        </span>
+                        <strong>CodeTrack</strong>
+                        <span>Practice • Learn • Grow</span>
                     </div>
                 </Link>
 
-
-                {/* =========================
-                    NAVIGATION
-                ========================= */}
+                {/* NAVIGATION */}
 
                 <div className="problems-nav-links">
-
-                    <Link
-                        to={dashboardPath}
-                        className={
-                            isAdmin
-                                ? ""
-                                : ""
-                        }
-                    >
+                    <Link to={dashboardPath}>
                         Dashboard
                     </Link>
 
@@ -436,39 +371,25 @@ function Problems() {
                             Students
                         </Link>
                     )}
-
                 </div>
 
-
-                {/* =========================
-                    PROFILE
-                ========================= */}
+                {/* PROFILE */}
 
                 <div className="problems-profile">
-
                     <div className="problems-avatar">
-                        {(isAdmin
-                                ? adminEmail
-                                : studentName
-                        )
+                        {(isAdmin ? adminEmail : studentName)
                             .charAt(0)
                             .toUpperCase()}
                     </div>
 
                     <div className="problems-profile-info">
-
                         <strong>
-                            {isAdmin
-                                ? "Admin"
-                                : studentName}
+                            {isAdmin ? "Admin" : studentName}
                         </strong>
 
                         <span>
-                            {isAdmin
-                                ? adminEmail
-                                : "Student"}
+                            {isAdmin ? adminEmail : "Student"}
                         </span>
-
                     </div>
 
                     <button
@@ -478,26 +399,16 @@ function Problems() {
                     >
                         Sign Out
                     </button>
-
                 </div>
-
             </nav>
 
-
-            {/* =========================
-                PAGE CONTENT
-            ========================= */}
+            {/* PAGE CONTENT */}
 
             <main className="problems-container">
-
-                {/* =========================
-                    HEADER
-                ========================= */}
+                {/* HEADER */}
 
                 <div className="problems-header">
-
                     <div className="problems-header-content">
-
                         <p className="page-label">
                             {isAdmin
                                 ? "PROBLEM MANAGEMENT"
@@ -515,111 +426,71 @@ function Problems() {
                                 ? "View and manage the coding problems available to your students."
                                 : "Challenge yourself, strengthen your coding skills, and track your progress."}
                         </p>
-
                     </div>
 
                     <div className="problem-count">
-
-                        <strong>
-                            {filteredProblems.length}
-                        </strong>
+                        <strong>{filteredProblems.length}</strong>
 
                         <span>
                             {filteredProblems.length === 1
                                 ? "Problem"
                                 : "Problems"}
                         </span>
-
                     </div>
-
                 </div>
 
-
-                {/* =========================
-                    FILTER BAR
-                ========================= */}
+                {/* FILTER BAR */}
 
                 <div className="problem-filter-bar">
-
                     <div className="search-wrapper">
-
-                        <span className="search-icon">
-                            🔍
-                        </span>
+                        <span className="search-icon">🔍</span>
 
                         <input
                             type="text"
                             placeholder="Search problems..."
                             value={search}
                             onChange={(event) =>
-                                setSearch(
-                                    event.target.value
-                                )
+                                setSearch(event.target.value)
                             }
                         />
-
                     </div>
-
 
                     <select
                         value={topic}
                         onChange={(event) =>
-                            setTopic(
-                                event.target.value
-                            )
+                            setTopic(event.target.value)
                         }
                     >
+                        <option value="All">All Topics</option>
 
-                        <option value="All">
-                            All Topics
-                        </option>
-
-                        {topics.map(
-                            (topicName) => (
-                                <option
-                                    key={topicName}
-                                    value={topicName}
-                                >
-                                    {topicName}
-                                </option>
-                            )
-                        )}
-
+                        {topics.map((topicName) => (
+                            <option
+                                key={topicName}
+                                value={topicName}
+                            >
+                                {topicName}
+                            </option>
+                        ))}
                     </select>
-
 
                     <select
                         value={difficulty}
                         onChange={(event) =>
-                            setDifficulty(
-                                event.target.value
-                            )
+                            setDifficulty(event.target.value)
                         }
                     >
-
                         <option value="All">
                             All Difficulties
                         </option>
 
-                        <option value="Easy">
-                            Easy
-                        </option>
-
-                        <option value="Medium">
-                            Medium
-                        </option>
-
-                        <option value="Hard">
-                            Hard
-                        </option>
-
+                        <option value="Easy">Easy</option>
+                        <option value="Medium">Medium</option>
+                        <option value="Hard">Hard</option>
                     </select>
-
 
                     {(search ||
                         difficulty !== "All" ||
                         topic !== "All") && (
-
                         <button
                             type="button"
                             className="clear-filter-button"
@@ -627,125 +498,74 @@ function Problems() {
                         >
                             Clear
                         </button>
-
                     )}
-
                 </div>
 
-
-                {/* =========================
-                    RESULTS INFO
-                ========================= */}
+                {/* RESULTS INFO */}
 
                 <div className="results-info">
-
                     <span>
                         Showing{" "}
-                        <strong>
-                            {filteredProblems.length}
-                        </strong>{" "}
-                        of{" "}
-                        <strong>
-                            {problems.length}
-                        </strong>{" "}
+                        <strong>{filteredProblems.length}</strong>{" "}
+                        of <strong>{problems.length}</strong>{" "}
                         problems
                     </span>
 
                     {(search ||
                         difficulty !== "All" ||
                         topic !== "All") && (
-
                         <span className="filter-active">
                             Filters active
                         </span>
-
                     )}
-
                 </div>
 
-
-                {/* =========================
-                    PROBLEM TABLE
-                ========================= */}
+                {/* PROBLEM TABLE */}
 
                 <div className="problem-table-wrapper">
-
                     <table className="problem-table">
-
                         <thead>
+                            <tr>
+                                <th className="number-column">#</th>
+                                <th>Problem</th>
+                                <th>Topic</th>
+                                <th>Difficulty</th>
 
-                        <tr>
+                                <th>
+                                    {isAdmin
+                                        ? "Availability"
+                                        : "Status"}
+                                </th>
 
-                            <th className="number-column">
-                                #
-                            </th>
-
-                            <th>
-                                Problem
-                            </th>
-
-                            <th>
-                                Topic
-                            </th>
-
-                            <th>
-                                Difficulty
-                            </th>
-
-                            <th>
-                                {isAdmin
-                                    ? "Availability"
-                                    : "Status"}
-                            </th>
-
-                            <th className="action-column">
-                                Action
-                            </th>
-
-                        </tr>
-
+                                <th className="action-column">
+                                    Action
+                                </th>
+                            </tr>
                         </thead>
 
-
                         <tbody>
-
-                        {filteredProblems.map(
-                            (problem) => {
-
-                                const status =
-                                    getProblemStatus(
-                                        problem.id
-                                    );
+                            {filteredProblems.map((problem) => {
+                                const status = getProblemStatus(
+                                    problem.id
+                                );
 
                                 return (
-                                    <tr
-                                        key={
-                                            problem.id
-                                        }
-                                    >
-
+                                    <tr key={problem.id}>
                                         {/* NUMBER */}
 
                                         <td className="problem-number">
-                                            {String(
-                                                problem.id
-                                            ).padStart(
+                                            {String(problem.id).padStart(
                                                 2,
                                                 "0"
                                             )}
                                         </td>
 
-
                                         {/* PROBLEM */}
 
                                         <td>
-
                                             <div className="problem-name">
-
                                                 <strong>
-                                                    {
-                                                        problem.title
-                                                    }
+                                                    {problem.title}
                                                 </strong>
 
                                                 <span>
@@ -753,173 +573,113 @@ function Problems() {
                                                         ? "Managed problem"
                                                         : "Practice problem"}
                                                 </span>
-
                                             </div>
-
                                         </td>
-
 
                                         {/* TOPIC */}
 
                                         <td>
-
                                             <span className="topic-badge">
-                                                {
-                                                    problem.topic ||
-                                                    "General"
-                                                }
+                                                {problem.topic || "General"}
                                             </span>
-
                                         </td>
-
 
                                         {/* DIFFICULTY */}
 
                                         <td>
-
                                             <span
                                                 className={`difficulty-badge ${
-                                                    problem.difficulty
-                                                        ?.toLowerCase() ||
+                                                    problem.difficulty?.toLowerCase() ||
                                                     "easy"
                                                 }`}
                                             >
-                                                {
-                                                    problem.difficulty ||
-                                                    "Easy"
-                                                }
+                                                {problem.difficulty || "Easy"}
                                             </span>
-
                                         </td>
-
 
                                         {/* STATUS / AVAILABILITY */}
 
                                         <td>
-
                                             {isAdmin ? (
-
                                                 <span className="status-badge solved">
                                                     <span className="status-dot">
                                                         ●
                                                     </span>
-
                                                     Available
                                                 </span>
-
                                             ) : (
-
                                                 <span
                                                     className={`status-badge ${getStatusClass(
                                                         status
                                                     )}`}
                                                 >
-
                                                     <span className="status-dot">
                                                         ●
                                                     </span>
 
-                                                    {getStatusText(
-                                                        status
-                                                    )}
-
+                                                    {getStatusText(status)}
                                                 </span>
-
                                             )}
-
                                         </td>
-
 
                                         {/* ACTION */}
 
                                         <td>
-
                                             <Link
                                                 to={`/problem/${problem.id}`}
                                                 className="solve-link"
                                             >
-
                                                 <span>
                                                     {isAdmin
                                                         ? "View"
-                                                        : status ===
-                                                        "SOLVED"
-                                                            ? "View"
-                                                            : "Solve"}
+                                                        : status === "SOLVED"
+                                                        ? "View"
+                                                        : "Solve"}
                                                 </span>
 
-                                                <span>
-                                                    →
-                                                </span>
-
+                                                <span>→</span>
                                             </Link>
-
                                         </td>
-
                                     </tr>
                                 );
-                            }
-                        )}
-
+                            })}
                         </tbody>
-
                     </table>
-
 
                     {/* EMPTY STATE */}
 
-                    {filteredProblems.length ===
-                        0 && (
+                    {filteredProblems.length === 0 && (
+                        <div className="empty-problems">
+                            <div className="empty-icon">🔍</div>
 
-                            <div className="empty-problems">
+                            <h3>No problems found</h3>
 
-                                <div className="empty-icon">
-                                    🔍
-                                </div>
+                            <p>
+                                We couldn't find any problems
+                                matching your current filters.
+                            </p>
 
-                                <h3>
-                                    No problems found
-                                </h3>
-
-                                <p>
-                                    We couldn't find any
-                                    problems matching your
-                                    current filters.
-                                </p>
-
-                                <button
-                                    type="button"
-                                    className="primary-action-button"
-                                    onClick={clearFilters}
-                                >
-                                    Clear Filters
-                                </button>
-
-                            </div>
-
-                        )}
-
+                            <button
+                                type="button"
+                                className="primary-action-button"
+                                onClick={clearFilters}
+                            >
+                                Clear Filters
+                            </button>
+                        </div>
+                    )}
                 </div>
-
             </main>
 
-
-            {/* =========================
-                FOOTER
-            ========================= */}
+            {/* FOOTER */}
 
             <footer className="problems-footer">
-
-                <span>
-                    © 2026 CodeTrack
-                </span>
+                <span>© 2026 CodeTrack</span>
 
                 <span>
                     Coding Progress Management System
                 </span>
-
             </footer>
-
         </div>
     );
 }
