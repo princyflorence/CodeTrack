@@ -2,6 +2,8 @@ import { useEffect, useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import "./App.css";
 
+const API_BASE_URL = "https://codetrack-backend-l3s6.onrender.com";
+
 function Students() {
     const [students, setStudents] = useState([]);
     const [loading, setLoading] = useState(true);
@@ -10,7 +12,7 @@ function Students() {
     const navigate = useNavigate();
 
     useEffect(() => {
-        fetch("http://localhost:8080/api/students")
+        fetch(`${API_BASE_URL}/api/students`)
             .then((response) => {
                 if (!response.ok) {
                     throw new Error("Failed to fetch students");
@@ -19,11 +21,11 @@ function Students() {
                 return response.json();
             })
             .then((data) => {
-                setStudents(data);
+                setStudents(Array.isArray(data) ? data : []);
                 setLoading(false);
             })
             .catch((error) => {
-                console.error(error);
+                console.error("Students loading error:", error);
                 setError("Unable to load students.");
                 setLoading(false);
             });
@@ -41,7 +43,6 @@ function Students() {
             <nav className="navbar">
 
                 <Link to="/admin" className="logo">
-
                     <div className="logo-icon">
                         C
                     </div>
@@ -49,9 +50,7 @@ function Students() {
                     <span>
                         CodeTrack
                     </span>
-
                 </Link>
-
 
                 <div className="nav-links">
 
@@ -72,7 +71,6 @@ function Students() {
 
                 </div>
 
-
                 <button
                     className="profile-button"
                     onClick={() => {
@@ -91,7 +89,6 @@ function Students() {
                 </button>
 
             </nav>
-
 
             {/* ================= HEADER ================= */}
 
@@ -118,7 +115,6 @@ function Students() {
 
             </section>
 
-
             {/* ================= STUDENTS ================= */}
 
             <section className="students-section">
@@ -137,7 +133,6 @@ function Students() {
 
                     </div>
 
-
                     <Link
                         to="/admin"
                         className="view-all-button"
@@ -147,7 +142,6 @@ function Students() {
 
                 </div>
 
-
                 {/* LOADING */}
 
                 {loading && (
@@ -155,7 +149,6 @@ function Students() {
                         Loading students...
                     </p>
                 )}
-
 
                 {/* ERROR */}
 
@@ -170,7 +163,6 @@ function Students() {
                     </p>
                 )}
 
-
                 {/* EMPTY */}
 
                 {!loading &&
@@ -180,7 +172,6 @@ function Students() {
                             No students found.
                         </p>
                     )}
-
 
                 {/* STUDENT LIST */}
 
@@ -205,7 +196,6 @@ function Students() {
 
                             </div>
 
-
                             {/* STUDENT INFO */}
 
                             <div className="student-info">
@@ -219,7 +209,6 @@ function Students() {
                                 </p>
 
                             </div>
-
 
                             {/* STATUS */}
 
@@ -236,7 +225,6 @@ function Students() {
                                 </span>
 
                             </div>
-
 
                             {/* VIEW BUTTON */}
 
@@ -256,7 +244,6 @@ function Students() {
                 </div>
 
             </section>
-
 
             {/* ================= FOOTER ================= */}
 
