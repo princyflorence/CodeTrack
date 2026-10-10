@@ -2,14 +2,14 @@ import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import "./Login.css";
 
+const API_BASE_URL = "https://codetrack-backend-l3s6.onrender.com";
+
 function Login() {
     const navigate = useNavigate();
 
     const [loginType, setLoginType] = useState("STUDENT");
-
     const [email, setEmail] = useState("");
     const [password, setPassword] = useState("");
-
     const [loading, setLoading] = useState(false);
     const [error, setError] = useState("");
 
@@ -32,8 +32,8 @@ function Login() {
         try {
             const endpoint =
                 loginType === "STUDENT"
-                    ? "http://localhost:8080/api/students/login"
-                    : "http://localhost:8080/api/admin/login";
+                    ? `${API_BASE_URL}/api/students/login`
+                    : `${API_BASE_URL}/api/admin/login`;
 
             const response = await fetch(endpoint, {
                 method: "POST",
@@ -50,18 +50,19 @@ function Login() {
 
             if (!response.ok || !data.success) {
                 setError(
-                    data.message ||
-                    "Invalid email or password."
+                    data.message || "Invalid email or password."
                 );
                 return;
             }
 
-            /* =========================================
-               STUDENT LOGIN
-            ========================================= */
-
+            // STUDENT LOGIN
             if (loginType === "STUDENT") {
                 const student = data.student;
+
+                if (!student) {
+                    setError("Student information was not returned by the server.");
+                    return;
+                }
 
                 localStorage.setItem(
                     "studentId",
@@ -78,50 +79,29 @@ function Login() {
                     student.email || ""
                 );
 
-                localStorage.setItem(
-                    "userRole",
-                    "STUDENT"
-                );
-
-                // Remove any old admin information
+                localStorage.setItem("userRole", "STUDENT");
                 localStorage.removeItem("adminEmail");
 
                 navigate("/student");
             }
 
-            /* =========================================
-               ADMIN LOGIN
-            ========================================= */
-
+            // ADMIN LOGIN
             else {
-                localStorage.setItem(
-                    "userRole",
-                    "ADMIN"
-                );
+                localStorage.setItem("userRole", "ADMIN");
+                localStorage.setItem("adminEmail", email.trim());
 
-                localStorage.setItem(
-                    "adminEmail",
-                    email.trim()
-                );
-
-                // Remove student information
                 localStorage.removeItem("studentId");
                 localStorage.removeItem("studentName");
                 localStorage.removeItem("studentEmail");
 
                 navigate("/admin");
             }
-
         } catch (error) {
-            console.error(
-                "Login error:",
-                error
-            );
+            console.error("Login error:", error);
 
             setError(
-                "Unable to connect to the backend server."
+                "Unable to connect to the backend server. Please try again."
             );
-
         } finally {
             setLoading(false);
         }
@@ -136,47 +116,26 @@ function Login() {
 
     return (
         <div className="login-page">
-
             <div className="login-container">
 
-                {/* =========================================
-                    LOGO
-                ========================================= */}
-
+                {/* LOGO */}
                 <div className="login-logo">
-
-                    <div className="login-logo-icon">
-                        C
-                    </div>
-
-                    <h1>
-                        CodeTrack
-                    </h1>
-
+                    <div className="login-logo-icon">C</div>
+                    <h1>CodeTrack</h1>
                 </div>
 
                 <p className="login-tagline">
                     Practice • Learn • Grow
                 </p>
 
-
-                {/* =========================================
-                    HEADING
-                ========================================= */}
-
-                <h2>
-                    Welcome to CodeTrack
-                </h2>
+                {/* HEADING */}
+                <h2>Welcome to CodeTrack</h2>
 
                 <p className="login-description">
                     Login to continue to your portal
                 </p>
 
-
-                {/* =========================================
-                    LOGIN TYPE SWITCH
-                ========================================= */}
-
+                {/* LOGIN TYPE SWITCH */}
                 <div
                     style={{
                         display: "flex",
@@ -184,15 +143,12 @@ function Login() {
                         marginBottom: "20px",
                         padding: "5px",
                         background: "#f3f4f6",
-                        borderRadius: "12px"
+                        borderRadius: "12px",
                     }}
                 >
-
                     <button
                         type="button"
-                        onClick={() =>
-                            switchLoginType("STUDENT")
-                        }
+                        onClick={() => switchLoginType("STUDENT")}
                         style={{
                             flex: 1,
                             padding: "12px",
@@ -211,7 +167,7 @@ function Login() {
                             boxShadow:
                                 loginType === "STUDENT"
                                     ? "0 2px 6px rgba(0,0,0,0.08)"
-                                    : "none"
+                                    : "none",
                         }}
                     >
                         🎓 Student
@@ -219,9 +175,7 @@ function Login() {
 
                     <button
                         type="button"
-                        onClick={() =>
-                            switchLoginType("ADMIN")
-                        }
+                        onClick={() => switchLoginType("ADMIN")}
                         style={{
                             flex: 1,
                             padding: "12px",
@@ -240,19 +194,14 @@ function Login() {
                             boxShadow:
                                 loginType === "ADMIN"
                                     ? "0 2px 6px rgba(0,0,0,0.08)"
-                                    : "none"
+                                    : "none",
                         }}
                     >
                         👨‍💼 Admin / Teacher
                     </button>
-
                 </div>
 
-
-                {/* =========================================
-                    LOGIN ROLE CARD
-                ========================================= */}
-
+                {/* LOGIN ROLE CARD */}
                 <div
                     className={`role-card ${
                         loginType === "STUDENT"
@@ -260,15 +209,11 @@ function Login() {
                             : "admin-role"
                     }`}
                 >
-
                     <div className="role-icon">
-                        {loginType === "STUDENT"
-                            ? "🎓"
-                            : "👨‍💼"}
+                        {loginType === "STUDENT" ? "🎓" : "👨‍💼"}
                     </div>
 
                     <div className="role-content">
-
                         <h3>
                             {loginType === "STUDENT"
                                 ? "Student Login"
@@ -280,28 +225,16 @@ function Login() {
                                 ? "Login to solve coding problems and track your progress."
                                 : "Login to manage problems, monitor students, and track performance."}
                         </p>
-
                     </div>
-
                 </div>
 
-
-                {/* =========================================
-                    LOGIN FORM
-                ========================================= */}
-
+                {/* LOGIN FORM */}
                 <form
                     className="login-form"
                     onSubmit={handleLogin}
                 >
-
-                    {/* EMAIL */}
-
                     <div className="login-field">
-
-                        <label htmlFor="email">
-                            Email
-                        </label>
+                        <label htmlFor="email">Email</label>
 
                         <input
                             id="email"
@@ -316,18 +249,12 @@ function Login() {
                                     : "Enter your email"
                             }
                             autoComplete="email"
+                            required
                         />
-
                     </div>
 
-
-                    {/* PASSWORD */}
-
                     <div className="login-field">
-
-                        <label htmlFor="password">
-                            Password
-                        </label>
+                        <label htmlFor="password">Password</label>
 
                         <input
                             id="password"
@@ -338,13 +265,11 @@ function Login() {
                             }
                             placeholder="Enter your password"
                             autoComplete="current-password"
+                            required
                         />
-
                     </div>
 
-
                     {/* ADMIN CREDENTIAL HINT */}
-
                     {loginType === "ADMIN" && (
                         <div
                             style={{
@@ -354,7 +279,7 @@ function Login() {
                                 padding: "12px",
                                 marginBottom: "15px",
                                 fontSize: "13px",
-                                color: "#475569"
+                                color: "#475569",
                             }}
                         >
                             <strong>Demo Admin Account</strong>
@@ -363,24 +288,18 @@ function Login() {
                                 Email: admin@codetrack.com
                             </div>
 
-                            <div>
-                                Password: admin123
-                            </div>
+                            <div>Password: admin123</div>
                         </div>
                     )}
 
-
-                    {/* ERROR */}
-
+                    {/* ERROR MESSAGE */}
                     {error && (
-                        <div className="login-error">
+                        <div className="login-error" role="alert">
                             ⚠️ {error}
                         </div>
                     )}
 
-
                     {/* LOGIN BUTTON */}
-
                     <button
                         type="submit"
                         className="login-submit-button"
@@ -392,20 +311,13 @@ function Login() {
                                 ? "Login as Student →"
                                 : "Login as Admin →"}
                     </button>
-
                 </form>
 
-
-                {/* =========================================
-                    FOOTER
-                ========================================= */}
-
+                {/* FOOTER */}
                 <p className="login-footer">
                     CodeTrack • Coding Progress Management System
                 </p>
-
             </div>
-
         </div>
     );
 }
