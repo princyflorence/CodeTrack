@@ -2,6 +2,9 @@ import { useEffect, useState } from "react";
 import { Link, useParams } from "react-router-dom";
 import "./Problem.css";
 
+const API_BASE_URL =
+    "https://codetrack-backend-l3s6.onrender.com";
+
 function ProblemDetails() {
     const { id } = useParams();
 
@@ -25,31 +28,42 @@ function ProblemDetails() {
     // LOAD PROBLEM
     // =========================
     useEffect(() => {
+        let cancelled = false;
+
         setLoading(true);
         setError("");
 
-        fetch(`http://localhost:8080/api/problems/${id}`)
+        fetch(`${API_BASE_URL}/api/problems/${id}`)
             .then((response) => {
                 if (!response.ok) {
-                    throw new Error("Problem not found");
+                    throw new Error(
+                        `Unable to load problem (${response.status})`
+                    );
                 }
 
                 return response.json();
             })
             .then((data) => {
-                setProblem(data);
+                if (cancelled) return;
 
-                // Automatically use sample input/output
+                setProblem(data);
                 setTestInput(data.sampleInput || "");
                 setExpectedOutput(data.sampleOutput || "");
-
                 setLoading(false);
             })
             .catch((error) => {
+                if (cancelled) return;
+
                 console.error("Problem loading error:", error);
-                setError("Unable to load this problem.");
+                setError(
+                    "Unable to load this problem. Please check your connection and try again."
+                );
                 setLoading(false);
             });
+
+        return () => {
+            cancelled = true;
+        };
     }, [id]);
 
     // =========================
@@ -76,7 +90,7 @@ function ProblemDetails() {
 
         try {
             const response = await fetch(
-                "http://localhost:8080/api/code/run",
+                `${API_BASE_URL}/api/code/run`,
                 {
                     method: "POST",
                     headers: {
@@ -90,24 +104,39 @@ function ProblemDetails() {
                 }
             );
 
-            const data = await response.json();
+            const responseText = await response.text();
+            let data = {};
+
+            try {
+                data = responseText
+                    ? JSON.parse(responseText)
+                    : {};
+            } catch {
+                data = { message: responseText };
+            }
 
             if (!response.ok) {
-                throw new Error(data.message || "Server error");
+                throw new Error(
+                    data.message ||
+                    `Server error (${response.status})`
+                );
             }
 
             if (data.success) {
                 setTestResult(
-                    `✅ ${data.message} Status: ${data.status}`
+                    `✅ ${data.message || "Test completed successfully."} ` +
+                    (data.status ? `Status: ${data.status}` : "")
                 );
             } else {
-                setTestResult(`❌ ${data.message}`);
+                setTestResult(
+                    `❌ ${data.message || "The test did not pass."}`
+                );
             }
         } catch (error) {
             console.error("Run test error:", error);
 
             setTestResult(
-                "❌ Unable to connect to the backend server."
+                `❌ ${error.message || "Unable to connect to the backend server."}`
             );
         } finally {
             setRunning(false);
@@ -119,6 +148,9 @@ function ProblemDetails() {
     // =========================
     const handleSubmit = async () => {
         if (!isStudent) {
+            setTestResult(
+                "⚠️ Only students can submit solutions."
+            );
             return;
         }
 
@@ -134,9 +166,9 @@ function ProblemDetails() {
             localStorage.getItem("currentStudentId") ||
             localStorage.getItem("userId");
 
-        if (!studentId) {
+        if (!studentId || !Number.isFinite(Number(studentId))) {
             setTestResult(
-                "⚠️ Student login information not found. Please login again."
+                "⚠️ Student login information not found. Please log in again."
             );
             return;
         }
@@ -146,7 +178,7 @@ function ProblemDetails() {
 
         try {
             const response = await fetch(
-                "http://localhost:8080/api/student-problems/submit",
+                `${API_BASE_URL}/api/student-problems/submit`,
                 {
                     method: "POST",
                     headers: {
@@ -159,29 +191,41 @@ function ProblemDetails() {
                 }
             );
 
-            const data = await response.json();
+            const responseText = await response.text();
+            let data = {};
+
+            try {
+                data = responseText
+                    ? JSON.parse(responseText)
+                    : {};
+            } catch {
+                data = { message: responseText };
+            }
 
             if (!response.ok) {
                 throw new Error(
-                    data.message || "Unable to submit solution."
+                    data.message ||
+                    `Unable to submit solution (${response.status})`
                 );
             }
 
             if (data.success) {
                 setTestResult(
-                    `🎉 ${data.message} Attempts: ${data.attempts}`
+                    `🎉 ${data.message || "Solution submitted successfully."}` +
+                    (data.attempts != null
+                        ? ` Attempts: ${data.attempts}`
+                        : "")
                 );
             } else {
-                setTestResult(`❌ ${data.message}`);
+                setTestResult(
+                    `❌ ${data.message || "Solution submission failed."}`
+                );
             }
         } catch (error) {
             console.error("Submit solution error:", error);
 
             setTestResult(
-                `❌ ${
-                    error.message ||
-                    "Unable to submit solution. Please check whether the backend is running."
-                }`
+                `❌ ${error.message || "Unable to submit solution."}`
             );
         } finally {
             setSubmitting(false);
@@ -251,9 +295,7 @@ function ProblemDetails() {
     return (
         <div className="problem-page">
 
-            {/* =========================
-                NAVBAR
-            ========================= */}
+            {/* NAVBAR */}
             <ProblemNavbar isAdmin={isAdmin} />
 
             <main className="problem-container">
@@ -270,9 +312,7 @@ function ProblemDetails() {
                     ← Back to Problems
                 </Link>
 
-                {/* =========================
-                    PROBLEM HEADER
-                ========================= */}
+                {/* PROBLEM HEADER */}
                 <section className="problem-header-card">
 
                     <div className="problem-header-content">
@@ -304,25 +344,16 @@ function ProblemDetails() {
                     </div>
 
                     <div className="problem-number-box">
-
                         <span>PROBLEM</span>
-
-                        <strong>
-                            #{problem.id}
-                        </strong>
-
+                        <strong>#{problem.id}</strong>
                     </div>
 
                 </section>
 
-                {/* =========================
-                    CODING LAYOUT
-                ========================= */}
+                {/* CODING LAYOUT */}
                 <section className="coding-layout">
 
-                    {/* =========================
-                        PROBLEM DESCRIPTION
-                    ========================= */}
+                    {/* PROBLEM DESCRIPTION */}
                     <div className="problem-description-card">
 
                         <div className="card-title">
@@ -333,10 +364,7 @@ function ProblemDetails() {
 
                             <div>
                                 <span>PROBLEM</span>
-
-                                <h2>
-                                    Problem Description
-                                </h2>
+                                <h2>Problem Description</h2>
                             </div>
 
                         </div>
@@ -349,97 +377,55 @@ function ProblemDetails() {
 
                             {problem.inputFormat && (
                                 <div className="info-block">
-
-                                    <h3>
-                                        Input
-                                    </h3>
-
-                                    <pre>
-                                        {problem.inputFormat}
-                                    </pre>
-
+                                    <h3>Input</h3>
+                                    <pre>{problem.inputFormat}</pre>
                                 </div>
                             )}
 
                             {problem.outputFormat && (
                                 <div className="info-block">
-
-                                    <h3>
-                                        Output
-                                    </h3>
-
-                                    <pre>
-                                        {problem.outputFormat}
-                                    </pre>
-
+                                    <h3>Output</h3>
+                                    <pre>{problem.outputFormat}</pre>
                                 </div>
                             )}
 
                             {problem.constraints && (
                                 <div className="info-block">
-
-                                    <h3>
-                                        Constraints
-                                    </h3>
-
-                                    <pre>
-                                        {problem.constraints}
-                                    </pre>
-
+                                    <h3>Constraints</h3>
+                                    <pre>{problem.constraints}</pre>
                                 </div>
                             )}
 
                             {problem.sampleInput && (
                                 <div className="info-block">
-
-                                    <h3>
-                                        Sample Input
-                                    </h3>
-
-                                    <pre>
-                                        {problem.sampleInput}
-                                    </pre>
-
+                                    <h3>Sample Input</h3>
+                                    <pre>{problem.sampleInput}</pre>
                                 </div>
                             )}
 
                             {problem.sampleOutput && (
                                 <div className="info-block">
-
-                                    <h3>
-                                        Sample Output
-                                    </h3>
-
-                                    <pre>
-                                        {problem.sampleOutput}
-                                    </pre>
-
+                                    <h3>Sample Output</h3>
+                                    <pre>{problem.sampleOutput}</pre>
                                 </div>
                             )}
 
                         </div>
-
                     </div>
 
-                    {/* =========================
-                        CODE EDITOR
-                    ========================= */}
+                    {/* CODE EDITOR */}
                     <div className="coding-card">
 
                         <div className="coding-card-header">
 
                             <div>
-
-                                <span>
-                                    SOLUTION
-                                </span>
+                                <span>SOLUTION</span>
 
                                 <h2>
                                     {isAdmin
                                         ? "View & Test Code"
                                         : "Write Your Code"}
                                 </h2>
-
                             </div>
 
                             <span className="language-badge">
@@ -453,16 +439,11 @@ function ProblemDetails() {
                             <div className="editor-topbar">
 
                                 <div className="editor-file">
-
                                     <span className="file-dot"></span>
-
                                     Main.java
-
                                 </div>
 
-                                <span>
-                                    Java 17
-                                </span>
+                                <span>Java 17</span>
 
                             </div>
 
@@ -487,23 +468,14 @@ public class Solution {
 
                         </div>
 
-                        {/* =========================
-                            TEST BENCH
-                        ========================= */}
+                        {/* TEST BENCH */}
                         <div className="test-bench">
 
                             <div className="test-bench-header">
 
                                 <div>
-
-                                    <span>
-                                        TEST BENCH
-                                    </span>
-
-                                    <h3>
-                                        Test Your Solution
-                                    </h3>
-
+                                    <span>TEST BENCH</span>
+                                    <h3>Test Your Solution</h3>
                                 </div>
 
                                 <span className="test-info">
@@ -517,22 +489,18 @@ public class Solution {
                                 {/* TEST INPUT */}
                                 <div className="test-field">
 
-                                    <label>
-                                        Test Input
-                                    </label>
+                                    <label>Test Input</label>
 
                                     <textarea
                                         value={testInput}
                                         onChange={(event) =>
-                                            setTestInput(
-                                                event.target.value
-                                            )
+                                            setTestInput(event.target.value)
                                         }
                                         placeholder={
                                             problem.sampleInput ||
                                             "Enter test input"
                                         }
-                                        rows="5"
+                                        rows={5}
                                         spellCheck="false"
                                     />
 
@@ -541,22 +509,18 @@ public class Solution {
                                 {/* EXPECTED OUTPUT */}
                                 <div className="test-field">
 
-                                    <label>
-                                        Expected Output
-                                    </label>
+                                    <label>Expected Output</label>
 
                                     <textarea
                                         value={expectedOutput}
                                         onChange={(event) =>
-                                            setExpectedOutput(
-                                                event.target.value
-                                            )
+                                            setExpectedOutput(event.target.value)
                                         }
                                         placeholder={
                                             problem.sampleOutput ||
                                             "Enter expected output"
                                         }
-                                        rows="5"
+                                        rows={5}
                                         spellCheck="false"
                                     />
 
@@ -564,12 +528,11 @@ public class Solution {
 
                             </div>
 
-                            {/* =========================
-                                ACTION BUTTONS
-                            ========================= */}
+                            {/* ACTION BUTTONS */}
                             <div className="coding-actions">
 
                                 <button
+                                    type="button"
                                     className="run-button"
                                     onClick={handleRunTest}
                                     disabled={running}
@@ -581,6 +544,7 @@ public class Solution {
 
                                 {isStudent && (
                                     <button
+                                        type="button"
                                         className="submit-button"
                                         onClick={handleSubmit}
                                         disabled={submitting}
@@ -596,24 +560,15 @@ public class Solution {
                             {/* TEST RESULT */}
                             {testResult && (
                                 <div className="test-result">
-
-                                    <span>
-                                        TEST RESULT
-                                    </span>
-
-                                    <p>
-                                        {testResult}
-                                    </p>
-
+                                    <span>TEST RESULT</span>
+                                    <p>{testResult}</p>
                                 </div>
                             )}
 
                         </div>
-
                     </div>
 
                 </section>
-
             </main>
 
             <footer className="problem-footer">
@@ -624,14 +579,11 @@ public class Solution {
     );
 }
 
-
 // =====================================================
 // PROBLEM NAVBAR
 // =====================================================
 
 function ProblemNavbar({ isAdmin }) {
-
-    // FIX: define isStudent inside this component
     const isStudent = !isAdmin;
 
     const dashboardPath = isAdmin
@@ -650,23 +602,14 @@ function ProblemNavbar({ isAdmin }) {
                 to={dashboardPath}
                 className="problem-logo"
             >
-
                 <div className="problem-logo-icon">
                     C
                 </div>
 
                 <div>
-
-                    <strong>
-                        CodeTrack
-                    </strong>
-
-                    <span>
-                        Coding Progress Platform
-                    </span>
-
+                    <strong>CodeTrack</strong>
+                    <span>Coding Progress Platform</span>
                 </div>
-
             </Link>
 
             {/* NAVIGATION */}
