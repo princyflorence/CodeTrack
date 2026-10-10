@@ -1,6 +1,8 @@
 import { useEffect, useState } from "react";
 import { Link, useParams } from "react-router-dom";
 
+const API_BASE_URL = "https://codetrack-backend-l3s6.onrender.com";
+
 function StudentDetails() {
     const { id } = useParams();
 
@@ -22,15 +24,9 @@ function StudentDetails() {
                     activityResponse,
                     problemsResponse,
                 ] = await Promise.all([
-                    fetch(
-                        `http://localhost:8080/api/students/${id}`
-                    ),
-                    fetch(
-                        `http://localhost:8080/api/student-problems/student/${id}`
-                    ),
-                    fetch(
-                        "http://localhost:8080/api/problems"
-                    ),
+                    fetch(`${API_BASE_URL}/api/students/${id}`),
+                    fetch(`${API_BASE_URL}/api/student-problems/student/${id}`),
+                    fetch(`${API_BASE_URL}/api/problems`),
                 ]);
 
                 if (!studentResponse.ok) {
@@ -38,49 +34,29 @@ function StudentDetails() {
                 }
 
                 if (!activityResponse.ok) {
-                    throw new Error(
-                        "Unable to load student activity"
-                    );
+                    throw new Error("Unable to load student activity");
                 }
 
                 if (!problemsResponse.ok) {
-                    throw new Error(
-                        "Unable to load problems"
-                    );
+                    throw new Error("Unable to load problems");
                 }
 
-                const studentData =
-                    await studentResponse.json();
-
-                const activityData =
-                    await activityResponse.json();
-
-                const problemsData =
-                    await problemsResponse.json();
+                const studentData = await studentResponse.json();
+                const activityData = await activityResponse.json();
+                const problemsData = await problemsResponse.json();
 
                 setStudent(studentData);
 
                 setStudentProblems(
-                    Array.isArray(activityData)
-                        ? activityData
-                        : []
+                    Array.isArray(activityData) ? activityData : []
                 );
 
                 setTotalProblems(
-                    Array.isArray(problemsData)
-                        ? problemsData.length
-                        : 0
+                    Array.isArray(problemsData) ? problemsData.length : 0
                 );
-
             } catch (error) {
-                console.error(
-                    "Student details error:",
-                    error
-                );
-
-                setError(
-                    "Unable to load student details."
-                );
+                console.error("Student details error:", error);
+                setError("Unable to load student details.");
             } finally {
                 setLoading(false);
             }
@@ -100,13 +76,10 @@ function StudentDetails() {
                     alignItems: "center",
                     justifyContent: "center",
                     background: "#f7f8fc",
-                    fontFamily:
-                        "Inter, Arial, sans-serif",
+                    fontFamily: "Inter, Arial, sans-serif",
                 }}
             >
-                <h2>
-                    Loading student...
-                </h2>
+                <h2>Loading student...</h2>
             </div>
         );
     }
@@ -123,16 +96,12 @@ function StudentDetails() {
                     alignItems: "center",
                     justifyContent: "center",
                     background: "#f7f8fc",
-                    fontFamily:
-                        "Inter, Arial, sans-serif",
+                    fontFamily: "Inter, Arial, sans-serif",
                     padding: "20px",
                     textAlign: "center",
                 }}
             >
-                <h2>
-                    {error ||
-                        "Student not found."}
-                </h2>
+                <h2>{error || "Student not found."}</h2>
 
                 <Link
                     to="/students"
@@ -153,42 +122,28 @@ function StudentDetails() {
 
     /* ---------------- CALCULATIONS ---------------- */
 
-    const solvedProblems =
-        studentProblems.filter(
-            (item) =>
-                item.status === "SOLVED"
-        );
+    const solvedProblems = studentProblems.filter(
+        (item) => item.status === "SOLVED"
+    );
 
-    const attemptedProblems =
-        studentProblems.filter(
-            (item) =>
-                item.status &&
-                item.status !==
-                "NOT_ATTEMPTED"
-        );
+    const attemptedProblems = studentProblems.filter(
+        (item) =>
+            item.status &&
+            item.status !== "NOT_ATTEMPTED"
+    );
 
-    const solvedCount =
-        solvedProblems.length;
-
-    const attemptedCount =
-        attemptedProblems.length;
+    const solvedCount = solvedProblems.length;
+    const attemptedCount = attemptedProblems.length;
 
     const progress =
         totalProblems > 0
-            ? Math.round(
-                (solvedCount /
-                    totalProblems) *
-                100
-            )
+            ? Math.round((solvedCount / totalProblems) * 100)
             : 0;
 
     /* ---------------- HELPERS ---------------- */
 
     const getProblemTitle = (item) => {
-        if (
-            item.problem &&
-            item.problem.title
-        ) {
+        if (item.problem && item.problem.title) {
             return item.problem.title;
         }
 
@@ -200,10 +155,7 @@ function StudentDetails() {
             return `Problem #${item.problemId}`;
         }
 
-        if (
-            item.problem &&
-            item.problem.id
-        ) {
+        if (item.problem && item.problem.id) {
             return `Problem #${item.problem.id}`;
         }
 
@@ -215,10 +167,7 @@ function StudentDetails() {
             return item.problemId;
         }
 
-        if (
-            item.problem &&
-            item.problem.id
-        ) {
+        if (item.problem && item.problem.id) {
             return item.problem.id;
         }
 
@@ -231,9 +180,7 @@ function StudentDetails() {
         }
 
         try {
-            return new Date(
-                date
-            ).toLocaleString();
+            return new Date(date).toLocaleString();
         } catch {
             return "No activity yet";
         }
@@ -266,11 +213,9 @@ function StudentDetails() {
                 minHeight: "100vh",
                 background: "#f7f8fc",
                 color: "#172033",
-                fontFamily:
-                    "Inter, Arial, sans-serif",
+                fontFamily: "Inter, Arial, sans-serif",
             }}
         >
-
             {/* ================= NAVBAR ================= */}
 
             <nav
@@ -278,17 +223,14 @@ function StudentDetails() {
                     minHeight: "76px",
                     padding: "0 7%",
                     background: "white",
-                    borderBottom:
-                        "1px solid #e7e9f0",
+                    borderBottom: "1px solid #e7e9f0",
                     display: "flex",
                     alignItems: "center",
-                    justifyContent:
-                        "space-between",
+                    justifyContent: "space-between",
                     gap: "20px",
                     flexWrap: "wrap",
                 }}
             >
-
                 {/* LOGO */}
 
                 <div
@@ -308,8 +250,7 @@ function StudentDetails() {
                             color: "white",
                             display: "flex",
                             alignItems: "center",
-                            justifyContent:
-                                "center",
+                            justifyContent: "center",
                             fontWeight: "800",
                             fontSize: "18px",
                         }}
@@ -320,10 +261,8 @@ function StudentDetails() {
                     <div>
                         <strong
                             style={{
-                                display:
-                                    "block",
-                                fontSize:
-                                    "20px",
+                                display: "block",
+                                fontSize: "20px",
                             }}
                         >
                             CodeTrack
@@ -331,10 +270,8 @@ function StudentDetails() {
 
                         <span
                             style={{
-                                fontSize:
-                                    "10px",
-                                color:
-                                    "#8a91a1",
+                                fontSize: "10px",
+                                color: "#8a91a1",
                             }}
                         >
                             Admin Portal
@@ -348,19 +285,15 @@ function StudentDetails() {
                     style={{
                         display: "flex",
                         gap: "35px",
-                        alignItems:
-                            "center",
+                        alignItems: "center",
                     }}
                 >
                     <Link
                         to="/admin"
                         style={{
-                            textDecoration:
-                                "none",
-                            color:
-                                "#667085",
-                            fontWeight:
-                                "600",
+                            textDecoration: "none",
+                            color: "#667085",
+                            fontWeight: "600",
                         }}
                     >
                         Dashboard
@@ -369,12 +302,9 @@ function StudentDetails() {
                     <Link
                         to="/problems"
                         style={{
-                            textDecoration:
-                                "none",
-                            color:
-                                "#667085",
-                            fontWeight:
-                                "600",
+                            textDecoration: "none",
+                            color: "#667085",
+                            fontWeight: "600",
                         }}
                     >
                         Problems
@@ -383,12 +313,9 @@ function StudentDetails() {
                     <Link
                         to="/students"
                         style={{
-                            textDecoration:
-                                "none",
-                            color:
-                                "#5b5ce2",
-                            fontWeight:
-                                "700",
+                            textDecoration: "none",
+                            color: "#5b5ce2",
+                            fontWeight: "700",
                         }}
                     >
                         Students
@@ -400,19 +327,13 @@ function StudentDetails() {
                 <Link
                     to="/login"
                     style={{
-                        padding:
-                            "11px 18px",
-                        background:
-                            "#172033",
+                        padding: "11px 18px",
+                        background: "#172033",
                         color: "white",
-                        borderRadius:
-                            "9px",
-                        textDecoration:
-                            "none",
-                        fontWeight:
-                            "600",
-                        fontSize:
-                            "13px",
+                        borderRadius: "9px",
+                        textDecoration: "none",
+                        fontWeight: "600",
+                        fontSize: "13px",
                     }}
                 >
                     Switch Role
@@ -424,27 +345,20 @@ function StudentDetails() {
             <main
                 style={{
                     width: "86%",
-                    maxWidth:
-                        "1100px",
+                    maxWidth: "1100px",
                     margin: "0 auto",
-                    padding:
-                        "50px 0 80px",
+                    padding: "50px 0 80px",
                 }}
             >
-
                 {/* BACK */}
 
                 <Link
                     to="/students"
                     style={{
-                        textDecoration:
-                            "none",
-                        color:
-                            "#5b5ce2",
-                        fontWeight:
-                            "600",
-                        fontSize:
-                            "13px",
+                        textDecoration: "none",
+                        color: "#5b5ce2",
+                        fontWeight: "600",
+                        fontSize: "13px",
                     }}
                 >
                     ← Back to Students
@@ -454,71 +368,46 @@ function StudentDetails() {
 
                 <section
                     style={{
-                        marginTop:
-                            "25px",
-                        padding:
-                            "35px",
-                        background:
-                            "white",
-                        border:
-                            "1px solid #e7e9f0",
-                        borderRadius:
-                            "18px",
-                        display:
-                            "flex",
-                        alignItems:
-                            "center",
+                        marginTop: "25px",
+                        padding: "35px",
+                        background: "white",
+                        border: "1px solid #e7e9f0",
+                        borderRadius: "18px",
+                        display: "flex",
+                        alignItems: "center",
                         gap: "25px",
-                        boxShadow:
-                            "0 10px 30px rgba(38, 43, 75, 0.05)",
+                        boxShadow: "0 10px 30px rgba(38, 43, 75, 0.05)",
                     }}
                 >
-
                     <div
                         style={{
                             width: "80px",
                             height: "80px",
-                            minWidth:
-                                "80px",
-                            borderRadius:
-                                "50%",
+                            minWidth: "80px",
+                            borderRadius: "50%",
                             background:
                                 "linear-gradient(135deg, #6366f1, #4f46e5)",
                             color: "white",
-                            display:
-                                "flex",
-                            alignItems:
-                                "center",
-                            justifyContent:
-                                "center",
-                            fontSize:
-                                "32px",
-                            fontWeight:
-                                "800",
+                            display: "flex",
+                            alignItems: "center",
+                            justifyContent: "center",
+                            fontSize: "32px",
+                            fontWeight: "800",
                         }}
                     >
                         {student.name
-                            ? student.name
-                                .charAt(
-                                    0
-                                )
-                                .toUpperCase()
+                            ? student.name.charAt(0).toUpperCase()
                             : "S"}
                     </div>
 
                     <div>
                         <p
                             style={{
-                                margin:
-                                    "0 0 8px",
-                                color:
-                                    "#5b5ce2",
-                                fontSize:
-                                    "11px",
-                                fontWeight:
-                                    "800",
-                                letterSpacing:
-                                    "1.5px",
+                                margin: "0 0 8px",
+                                color: "#5b5ce2",
+                                fontSize: "11px",
+                                fontWeight: "800",
+                                letterSpacing: "1.5px",
                             }}
                         >
                             STUDENT PROFILE
@@ -526,10 +415,8 @@ function StudentDetails() {
 
                         <h1
                             style={{
-                                margin:
-                                    "0 0 7px",
-                                fontSize:
-                                    "32px",
+                                margin: "0 0 7px",
+                                fontSize: "32px",
                             }}
                         >
                             {student.name}
@@ -538,53 +425,40 @@ function StudentDetails() {
                         <p
                             style={{
                                 margin: 0,
-                                color:
-                                    "#737c8e",
+                                color: "#737c8e",
                             }}
                         >
                             {student.email}
                         </p>
                     </div>
-
                 </section>
 
                 {/* ================= INFORMATION CARDS ================= */}
 
                 <section
                     style={{
-                        display:
-                            "grid",
-                        gridTemplateColumns:
-                            "repeat(4, 1fr)",
+                        display: "grid",
+                        gridTemplateColumns: "repeat(4, 1fr)",
                         gap: "20px",
-                        marginTop:
-                            "25px",
+                        marginTop: "25px",
                     }}
                 >
-
                     {/* ACCOUNT STATUS */}
 
                     <div
                         style={{
-                            background:
-                                "white",
-                            border:
-                                "1px solid #e7e9f0",
-                            borderRadius:
-                                "15px",
-                            padding:
-                                "25px",
+                            background: "white",
+                            border: "1px solid #e7e9f0",
+                            borderRadius: "15px",
+                            padding: "25px",
                         }}
                     >
                         <p
                             style={{
                                 margin: 0,
-                                color:
-                                    "#8a91a1",
-                                fontSize:
-                                    "11px",
-                                fontWeight:
-                                    "700",
+                                color: "#8a91a1",
+                                fontSize: "11px",
+                                fontWeight: "700",
                             }}
                         >
                             ACCOUNT STATUS
@@ -592,30 +466,23 @@ function StudentDetails() {
 
                         <h2
                             style={{
-                                margin:
-                                    "10px 0 5px",
-                                color:
-                                    student.active
-                                        ? "#159447"
-                                        : "#d93636",
+                                margin: "10px 0 5px",
+                                color: student.active
+                                    ? "#159447"
+                                    : "#d93636",
                             }}
                         >
-                            {student.active
-                                ? "Active"
-                                : "Inactive"}
+                            {student.active ? "Active" : "Inactive"}
                         </h2>
 
                         <p
                             style={{
                                 margin: 0,
-                                color:
-                                    "#8a91a1",
-                                fontSize:
-                                    "12px",
+                                color: "#8a91a1",
+                                fontSize: "12px",
                             }}
                         >
-                            Current account
-                            status
+                            Current account status
                         </p>
                     </div>
 
@@ -623,46 +490,32 @@ function StudentDetails() {
 
                     <div
                         style={{
-                            background:
-                                "white",
-                            border:
-                                "1px solid #e7e9f0",
-                            borderRadius:
-                                "15px",
-                            padding:
-                                "25px",
+                            background: "white",
+                            border: "1px solid #e7e9f0",
+                            borderRadius: "15px",
+                            padding: "25px",
                         }}
                     >
                         <p
                             style={{
                                 margin: 0,
-                                color:
-                                    "#8a91a1",
-                                fontSize:
-                                    "11px",
-                                fontWeight:
-                                    "700",
+                                color: "#8a91a1",
+                                fontSize: "11px",
+                                fontWeight: "700",
                             }}
                         >
                             PROBLEMS ATTEMPTED
                         </p>
 
-                        <h2
-                            style={{
-                                margin:
-                                    "10px 0 5px",
-                            }}
-                        >
+                        <h2 style={{ margin: "10px 0 5px" }}>
                             {attemptedCount}
                         </h2>
 
                         <p
                             style={{
                                 margin: 0,
-                                color:
-                                    "#8a91a1",
-                                fontSize:
-                                    "12px",
+                                color: "#8a91a1",
+                                fontSize: "12px",
                             }}
                         >
                             Problems attempted
@@ -673,50 +526,35 @@ function StudentDetails() {
 
                     <div
                         style={{
-                            background:
-                                "white",
-                            border:
-                                "1px solid #e7e9f0",
-                            borderRadius:
-                                "15px",
-                            padding:
-                                "25px",
+                            background: "white",
+                            border: "1px solid #e7e9f0",
+                            borderRadius: "15px",
+                            padding: "25px",
                         }}
                     >
                         <p
                             style={{
                                 margin: 0,
-                                color:
-                                    "#8a91a1",
-                                fontSize:
-                                    "11px",
-                                fontWeight:
-                                    "700",
+                                color: "#8a91a1",
+                                fontSize: "11px",
+                                fontWeight: "700",
                             }}
                         >
                             PROBLEMS SOLVED
                         </p>
 
-                        <h2
-                            style={{
-                                margin:
-                                    "10px 0 5px",
-                            }}
-                        >
+                        <h2 style={{ margin: "10px 0 5px" }}>
                             {solvedCount}
                         </h2>
 
                         <p
                             style={{
                                 margin: 0,
-                                color:
-                                    "#8a91a1",
-                                fontSize:
-                                    "12px",
+                                color: "#8a91a1",
+                                fontSize: "12px",
                             }}
                         >
-                            Coding problems
-                            solved
+                            Coding problems solved
                         </p>
                     </div>
 
@@ -724,25 +562,18 @@ function StudentDetails() {
 
                     <div
                         style={{
-                            background:
-                                "white",
-                            border:
-                                "1px solid #e7e9f0",
-                            borderRadius:
-                                "15px",
-                            padding:
-                                "25px",
+                            background: "white",
+                            border: "1px solid #e7e9f0",
+                            borderRadius: "15px",
+                            padding: "25px",
                         }}
                     >
                         <p
                             style={{
                                 margin: 0,
-                                color:
-                                    "#8a91a1",
-                                fontSize:
-                                    "11px",
-                                fontWeight:
-                                    "700",
+                                color: "#8a91a1",
+                                fontSize: "11px",
+                                fontWeight: "700",
                             }}
                         >
                             PROGRESS
@@ -750,10 +581,8 @@ function StudentDetails() {
 
                         <h2
                             style={{
-                                margin:
-                                    "10px 0 5px",
-                                color:
-                                    "#5b5ce2",
+                                margin: "10px 0 5px",
+                                color: "#5b5ce2",
                             }}
                         >
                             {progress}%
@@ -762,450 +591,290 @@ function StudentDetails() {
                         <p
                             style={{
                                 margin: 0,
-                                color:
-                                    "#8a91a1",
-                                fontSize:
-                                    "12px",
+                                color: "#8a91a1",
+                                fontSize: "12px",
                             }}
                         >
-                            {solvedCount} of{" "}
-                            {totalProblems}{" "}
-                            solved
+                            {solvedCount} of {totalProblems} solved
                         </p>
                     </div>
-
                 </section>
 
                 {/* ================= PROGRESS BAR ================= */}
 
                 <section
                     style={{
-                        marginTop:
-                            "25px",
-                        background:
-                            "white",
-                        border:
-                            "1px solid #e7e9f0",
-                        borderRadius:
-                            "18px",
-                        padding:
-                            "30px",
+                        marginTop: "25px",
+                        background: "white",
+                        border: "1px solid #e7e9f0",
+                        borderRadius: "18px",
+                        padding: "30px",
                     }}
                 >
-
                     <div
                         style={{
-                            display:
-                                "flex",
-                            justifyContent:
-                                "space-between",
-                            alignItems:
-                                "center",
-                            marginBottom:
-                                "12px",
+                            display: "flex",
+                            justifyContent: "space-between",
+                            alignItems: "center",
+                            marginBottom: "12px",
                         }}
                     >
-
                         <div>
                             <p
                                 style={{
-                                    margin:
-                                        "0 0 5px",
-                                    color:
-                                        "#5b5ce2",
-                                    fontSize:
-                                        "11px",
-                                    fontWeight:
-                                        "800",
-                                    letterSpacing:
-                                        "1.5px",
+                                    margin: "0 0 5px",
+                                    color: "#5b5ce2",
+                                    fontSize: "11px",
+                                    fontWeight: "800",
+                                    letterSpacing: "1.5px",
                                 }}
                             >
                                 OVERALL PROGRESS
                             </p>
 
-                            <h2
-                                style={{
-                                    margin: 0,
-                                }}
-                            >
+                            <h2 style={{ margin: 0 }}>
                                 Coding Progress
                             </h2>
                         </div>
 
                         <strong
                             style={{
-                                fontSize:
-                                    "22px",
-                                color:
-                                    "#5b5ce2",
+                                fontSize: "22px",
+                                color: "#5b5ce2",
                             }}
                         >
                             {progress}%
                         </strong>
-
                     </div>
 
                     <div
                         style={{
-                            width:
-                                "100%",
-                            height:
-                                "10px",
-                            background:
-                                "#eef0f5",
-                            borderRadius:
-                                "20px",
-                            overflow:
-                                "hidden",
+                            width: "100%",
+                            height: "10px",
+                            background: "#eef0f5",
+                            borderRadius: "20px",
+                            overflow: "hidden",
                         }}
                     >
                         <div
                             style={{
                                 width: `${progress}%`,
-                                height:
-                                    "100%",
+                                height: "100%",
                                 background:
                                     "linear-gradient(90deg, #6366f1, #4f46e5)",
-                                borderRadius:
-                                    "20px",
-                                transition:
-                                    "width 0.5s ease",
+                                borderRadius: "20px",
+                                transition: "width 0.5s ease",
                             }}
                         />
                     </div>
 
                     <p
                         style={{
-                            margin:
-                                "12px 0 0",
-                            color:
-                                "#8a91a1",
-                            fontSize:
-                                "13px",
+                            margin: "12px 0 0",
+                            color: "#8a91a1",
+                            fontSize: "13px",
                         }}
                     >
-                        {solvedCount} of{" "}
-                        {totalProblems}{" "}
-                        coding problems
+                        {solvedCount} of {totalProblems} coding problems
                         completed.
                     </p>
-
                 </section>
 
                 {/* ================= ACTIVITY ================= */}
 
                 <section
                     style={{
-                        marginTop:
-                            "25px",
-                        background:
-                            "white",
-                        border:
-                            "1px solid #e7e9f0",
-                        borderRadius:
-                            "18px",
-                        padding:
-                            "30px",
+                        marginTop: "25px",
+                        background: "white",
+                        border: "1px solid #e7e9f0",
+                        borderRadius: "18px",
+                        padding: "30px",
                     }}
                 >
-
-                    <div
-                        style={{
-                            marginBottom:
-                                "25px",
-                        }}
-                    >
+                    <div style={{ marginBottom: "25px" }}>
                         <p
                             style={{
-                                margin:
-                                    "0 0 5px",
-                                color:
-                                    "#5b5ce2",
-                                fontSize:
-                                    "11px",
-                                fontWeight:
-                                    "800",
-                                letterSpacing:
-                                    "1.5px",
+                                margin: "0 0 5px",
+                                color: "#5b5ce2",
+                                fontSize: "11px",
+                                fontWeight: "800",
+                                letterSpacing: "1.5px",
                             }}
                         >
                             STUDENT ACTIVITY
                         </p>
 
-                        <h2
-                            style={{
-                                margin: 0,
-                            }}
-                        >
+                        <h2 style={{ margin: 0 }}>
                             Problem Activity
                         </h2>
                     </div>
 
-                    {studentProblems.length ===
-                    0 ? (
+                    {studentProblems.length === 0 ? (
                         <div
                             style={{
-                                padding:
-                                    "40px 20px",
-                                textAlign:
-                                    "center",
-                                background:
-                                    "#f8f9fc",
-                                borderRadius:
-                                    "12px",
-                                color:
-                                    "#8a91a1",
+                                padding: "40px 20px",
+                                textAlign: "center",
+                                background: "#f8f9fc",
+                                borderRadius: "12px",
+                                color: "#8a91a1",
                             }}
                         >
-                            No problem activity
-                            found for this
-                            student.
+                            No problem activity found for this student.
                         </div>
                     ) : (
                         <div
                             style={{
-                                display:
-                                    "flex",
-                                flexDirection:
-                                    "column",
+                                display: "flex",
+                                flexDirection: "column",
                                 gap: "12px",
                             }}
                         >
                             {studentProblems
                                 .slice()
-                                .sort(
-                                    (
-                                        a,
-                                        b
-                                    ) => {
-                                        const dateA =
-                                            new Date(
-                                                a.lastAttemptedAt ||
-                                                a.updatedAt ||
-                                                0
-                                            ).getTime();
+                                .sort((a, b) => {
+                                    const dateA = new Date(
+                                        a.lastAttemptedAt || a.updatedAt || 0
+                                    ).getTime();
 
-                                        const dateB =
-                                            new Date(
-                                                b.lastAttemptedAt ||
-                                                b.updatedAt ||
-                                                0
-                                            ).getTime();
+                                    const dateB = new Date(
+                                        b.lastAttemptedAt || b.updatedAt || 0
+                                    ).getTime();
 
-                                        return (
-                                            dateB -
-                                            dateA
-                                        );
-                                    }
-                                )
-                                .map(
-                                    (
-                                        item,
-                                        index
-                                    ) => {
-                                        const problemId =
-                                            getProblemId(
-                                                item
-                                            );
+                                    return dateB - dateA;
+                                })
+                                .map((item, index) => {
+                                    const problemId = getProblemId(item);
+                                    const statusStyle = getStatusStyle(
+                                        item.status
+                                    );
 
-                                        const statusStyle =
-                                            getStatusStyle(
-                                                item.status
-                                            );
-
-                                        return (
+                                    return (
+                                        <div
+                                            key={
+                                                item.id ||
+                                                `${problemId}-${index}`
+                                            }
+                                            style={{
+                                                padding: "18px",
+                                                border: "1px solid #edf0f4",
+                                                borderRadius: "12px",
+                                                display: "flex",
+                                                alignItems: "center",
+                                                justifyContent: "space-between",
+                                                gap: "20px",
+                                            }}
+                                        >
                                             <div
-                                                key={
-                                                    item.id ||
-                                                    `${problemId}-${index}`
-                                                }
                                                 style={{
-                                                    padding:
-                                                        "18px",
-                                                    border:
-                                                        "1px solid #edf0f4",
-                                                    borderRadius:
-                                                        "12px",
-                                                    display:
-                                                        "flex",
-                                                    alignItems:
-                                                        "center",
-                                                    justifyContent:
-                                                        "space-between",
-                                                    gap: "20px",
+                                                    display: "flex",
+                                                    alignItems: "center",
+                                                    gap: "15px",
+                                                    minWidth: 0,
                                                 }}
                                             >
-
                                                 <div
                                                     style={{
-                                                        display:
-                                                            "flex",
-                                                        alignItems:
-                                                            "center",
-                                                        gap: "15px",
-                                                        minWidth: 0,
+                                                        width: "42px",
+                                                        height: "42px",
+                                                        minWidth: "42px",
+                                                        borderRadius: "10px",
+                                                        background: "#f0f1ff",
+                                                        color: "#5b5ce2",
+                                                        display: "flex",
+                                                        alignItems: "center",
+                                                        justifyContent: "center",
+                                                        fontWeight: "800",
                                                     }}
                                                 >
-
-                                                    <div
-                                                        style={{
-                                                            width:
-                                                                "42px",
-                                                            height:
-                                                                "42px",
-                                                            minWidth:
-                                                                "42px",
-                                                            borderRadius:
-                                                                "10px",
-                                                            background:
-                                                                "#f0f1ff",
-                                                            color:
-                                                                "#5b5ce2",
-                                                            display:
-                                                                "flex",
-                                                            alignItems:
-                                                                "center",
-                                                            justifyContent:
-                                                                "center",
-                                                            fontWeight:
-                                                                "800",
-                                                        }}
-                                                    >
-                                                        {index +
-                                                            1}
-                                                    </div>
-
-                                                    <div
-                                                        style={{
-                                                            minWidth:
-                                                                0,
-                                                        }}
-                                                    >
-                                                        <h3
-                                                            style={{
-                                                                margin:
-                                                                    "0 0 5px",
-                                                                fontSize:
-                                                                    "15px",
-                                                            }}
-                                                        >
-                                                            {getProblemTitle(
-                                                                item
-                                                            )}
-                                                        </h3>
-
-                                                        <p
-                                                            style={{
-                                                                margin: 0,
-                                                                color:
-                                                                    "#8a91a1",
-                                                                fontSize:
-                                                                    "12px",
-                                                            }}
-                                                        >
-                                                            Attempts:{" "}
-                                                            {item.attempts ||
-                                                                0}
-                                                        </p>
-                                                    </div>
-
+                                                    {index + 1}
                                                 </div>
 
-                                                <div
-                                                    style={{
-                                                        display:
-                                                            "flex",
-                                                        alignItems:
-                                                            "center",
-                                                        gap: "18px",
-                                                        flexShrink:
-                                                            0,
-                                                    }}
-                                                >
-
-                                                    <div
+                                                <div style={{ minWidth: 0 }}>
+                                                    <h3
                                                         style={{
-                                                            textAlign:
-                                                                "right",
+                                                            margin: "0 0 5px",
+                                                            fontSize: "15px",
                                                         }}
                                                     >
-                                                        <span
-                                                            style={{
-                                                                display:
-                                                                    "inline-block",
-                                                                padding:
-                                                                    "6px 10px",
-                                                                borderRadius:
-                                                                    "20px",
-                                                                fontSize:
-                                                                    "11px",
-                                                                fontWeight:
-                                                                    "700",
-                                                                background:
-                                                                statusStyle.background,
-                                                                color:
-                                                                statusStyle.color,
-                                                            }}
-                                                        >
-                                                            {item.status ||
-                                                                "NOT_ATTEMPTED"}
-                                                        </span>
+                                                        {getProblemTitle(item)}
+                                                    </h3>
 
-                                                        <p
-                                                            style={{
-                                                                margin:
-                                                                    "7px 0 0",
-                                                                color:
-                                                                    "#9aa1af",
-                                                                fontSize:
-                                                                    "11px",
-                                                            }}
-                                                        >
-                                                            {formatDate(
-                                                                item.lastAttemptedAt ||
-                                                                item.updatedAt
-                                                            )}
-                                                        </p>
-                                                    </div>
-
-                                                    {problemId && (
-                                                        <Link
-                                                            to={`/problems/${problemId}`}
-                                                            style={{
-                                                                padding:
-                                                                    "8px 13px",
-                                                                border:
-                                                                    "1px solid #dfe2ea",
-                                                                borderRadius:
-                                                                    "8px",
-                                                                textDecoration:
-                                                                    "none",
-                                                                color:
-                                                                    "#5b5ce2",
-                                                                fontSize:
-                                                                    "12px",
-                                                                fontWeight:
-                                                                    "700",
-                                                            }}
-                                                        >
-                                                            View
-                                                        </Link>
-                                                    )}
-
+                                                    <p
+                                                        style={{
+                                                            margin: 0,
+                                                            color: "#8a91a1",
+                                                            fontSize: "12px",
+                                                        }}
+                                                    >
+                                                        Attempts:{" "}
+                                                        {item.attempts || 0}
+                                                    </p>
                                                 </div>
-
                                             </div>
-                                        );
-                                    }
-                                )}
+
+                                            <div
+                                                style={{
+                                                    display: "flex",
+                                                    alignItems: "center",
+                                                    gap: "18px",
+                                                    flexShrink: 0,
+                                                }}
+                                            >
+                                                <div style={{ textAlign: "right" }}>
+                                                    <span
+                                                        style={{
+                                                            display: "inline-block",
+                                                            padding: "6px 10px",
+                                                            borderRadius: "20px",
+                                                            fontSize: "11px",
+                                                            fontWeight: "700",
+                                                            background:
+                                                                statusStyle.background,
+                                                            color: statusStyle.color,
+                                                        }}
+                                                    >
+                                                        {item.status ||
+                                                            "NOT_ATTEMPTED"}
+                                                    </span>
+
+                                                    <p
+                                                        style={{
+                                                            margin: "7px 0 0",
+                                                            color: "#9aa1af",
+                                                            fontSize: "11px",
+                                                        }}
+                                                    >
+                                                        {formatDate(
+                                                            item.lastAttemptedAt ||
+                                                            item.updatedAt
+                                                        )}
+                                                    </p>
+                                                </div>
+
+                                                {problemId && (
+                                                    <Link
+                                                        to={`/problems/${problemId}`}
+                                                        style={{
+                                                            padding: "8px 13px",
+                                                            border: "1px solid #dfe2ea",
+                                                            borderRadius: "8px",
+                                                            textDecoration: "none",
+                                                            color: "#5b5ce2",
+                                                            fontSize: "12px",
+                                                            fontWeight: "700",
+                                                        }}
+                                                    >
+                                                        View
+                                                    </Link>
+                                                )}
+                                            </div>
+                                        </div>
+                                    );
+                                })}
                         </div>
                     )}
-
                 </section>
-
             </main>
-
         </div>
     );
 }
