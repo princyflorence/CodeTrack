@@ -2,8 +2,9 @@ import { useEffect, useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import "./Admin.css";
 
-function Admin() {
+const API_BASE_URL = "https://codetrack-backend-l3s6.onrender.com";
 
+function Admin() {
     const navigate = useNavigate();
 
     const [problems, setProblems] = useState([]);
@@ -12,12 +13,14 @@ function Admin() {
     const [loadingProblems, setLoadingProblems] = useState(true);
     const [loadingStudents, setLoadingStudents] = useState(true);
 
+    const [problemsError, setProblemsError] = useState("");
+    const [studentsError, setStudentsError] = useState("");
+
     /* =========================
        SIGN OUT
     ========================= */
 
     const handleSignOut = () => {
-
         localStorage.removeItem("studentId");
         localStorage.removeItem("studentName");
         localStorage.removeItem("studentEmail");
@@ -27,122 +30,103 @@ function Admin() {
         navigate("/login", { replace: true });
     };
 
-
     /* =========================
        LOAD DASHBOARD DATA
     ========================= */
 
     useEffect(() => {
-
-        // Get problems
-        fetch("http://localhost:8080/api/problems")
-            .then((response) => {
+        const loadProblems = async () => {
+            try {
+                const response = await fetch(
+                    `${API_BASE_URL}/api/problems`
+                );
 
                 if (!response.ok) {
-                    throw new Error("Failed to load problems");
+                    throw new Error(
+                        `Failed to load problems (${response.status})`
+                    );
                 }
 
-                return response.json();
+                const data = await response.json();
 
-            })
-            .then((data) => {
-
-                setProblems(data);
-                setLoadingProblems(false);
-
-            })
-            .catch((error) => {
-
+                setProblems(
+                    Array.isArray(data) ? data : []
+                );
+            } catch (error) {
                 console.error("Problems error:", error);
+                setProblemsError(
+                    "Unable to load coding problems."
+                );
+            } finally {
                 setLoadingProblems(false);
+            }
+        };
 
-            });
-
-
-        // Get students
-        fetch("http://localhost:8080/api/students")
-            .then((response) => {
+        const loadStudents = async () => {
+            try {
+                const response = await fetch(
+                    `${API_BASE_URL}/api/students`
+                );
 
                 if (!response.ok) {
-                    throw new Error("Failed to load students");
+                    throw new Error(
+                        `Failed to load students (${response.status})`
+                    );
                 }
 
-                return response.json();
+                const data = await response.json();
 
-            })
-            .then((data) => {
-
-                setStudents(data);
-                setLoadingStudents(false);
-
-            })
-            .catch((error) => {
-
+                setStudents(
+                    Array.isArray(data) ? data : []
+                );
+            } catch (error) {
                 console.error("Students error:", error);
+                setStudentsError(
+                    "Unable to load student information."
+                );
+            } finally {
                 setLoadingStudents(false);
+            }
+        };
 
-            });
-
+        loadProblems();
+        loadStudents();
     }, []);
-
 
     /* =========================
        STATISTICS
     ========================= */
 
     const totalProblems = problems.length;
-
     const totalStudents = students.length;
 
     const activeStudents = students.filter(
-        (student) => student.active
+        (student) => student.active === true
     ).length;
 
+    /* =========================
+       DASHBOARD UI
+    ========================= */
 
     return (
-
         <div className="admin-page">
 
-            {/* =========================
-                NAVBAR
-            ========================= */}
+            {/* NAVBAR */}
 
             <nav className="admin-navbar">
-
-                {/* LOGO */}
-
-                <Link
-                    to="/admin"
-                    className="admin-logo"
-                >
-
+                <Link to="/admin" className="admin-logo">
                     <div className="admin-logo-icon">
                         C
                     </div>
 
                     <div className="admin-logo-text">
-
-                        <strong>
-                            CodeTrack
-                        </strong>
-
-                        <span>
-                            Admin Portal
-                        </span>
-
+                        <strong>CodeTrack</strong>
+                        <span>Admin Portal</span>
                     </div>
-
                 </Link>
 
-
-                {/* NAVIGATION */}
-
                 <div className="admin-nav-links">
-
-                    <Link
-                        to="/admin"
-                        className="active"
-                    >
+                    <Link to="/admin" className="active">
                         Dashboard
                     </Link>
 
@@ -153,11 +137,7 @@ function Admin() {
                     <Link to="/students">
                         Students
                     </Link>
-
                 </div>
-
-
-                {/* SIGN OUT */}
 
                 <button
                     onClick={handleSignOut}
@@ -165,25 +145,16 @@ function Admin() {
                 >
                     Sign Out
                 </button>
-
             </nav>
 
-
-            {/* =========================
-                MAIN
-            ========================= */}
+            {/* MAIN */}
 
             <main className="admin-main">
 
-
-                {/* =========================
-                    HERO
-                ========================= */}
+                {/* HERO */}
 
                 <section className="admin-hero">
-
                     <div className="admin-hero-content">
-
                         <span className="admin-eyebrow">
                             ADMIN DASHBOARD
                         </span>
@@ -198,9 +169,7 @@ function Admin() {
                             one place.
                         </p>
 
-
                         <div className="admin-hero-actions">
-
                             <Link
                                 to="/add-problem"
                                 className="admin-primary-button"
@@ -214,185 +183,112 @@ function Admin() {
                             >
                                 Manage Students
                             </Link>
-
                         </div>
-
                     </div>
 
-
-                    {/* ADMIN CARD */}
-
                     <div className="admin-welcome-card">
-
                         <div className="admin-welcome-icon">
                             C
                         </div>
 
-                        <span>
-                            ADMIN PORTAL
-                        </span>
-
-                        <strong>
-                            CodeTrack
-                        </strong>
+                        <span>ADMIN PORTAL</span>
+                        <strong>CodeTrack</strong>
 
                         <p>
                             Manage your university coding
                             practice platform.
                         </p>
-
                     </div>
-
                 </section>
 
-
-                {/* =========================
-                    STATISTICS
-                ========================= */}
+                {/* STATISTICS */}
 
                 <section className="admin-stats">
 
-                    {/* TOTAL PROBLEMS */}
-
                     <div className="admin-stat-card">
-
-                        <div className="admin-stat-icon">
-                            ◈
-                        </div>
+                        <div className="admin-stat-icon">◈</div>
 
                         <div>
-
                             <strong>
                                 {loadingProblems
                                     ? "..."
                                     : totalProblems}
                             </strong>
 
-                            <span>
-                                Total Problems
-                            </span>
+                            <span>Total Problems</span>
 
                             <p>
                                 Available coding problems
                             </p>
 
+                            {problemsError && (
+                                <small role="alert">
+                                    {problemsError}
+                                </small>
+                            )}
                         </div>
-
                     </div>
 
-
-                    {/* TOTAL STUDENTS */}
-
                     <div className="admin-stat-card">
-
-                        <div className="admin-stat-icon">
-                            ♟
-                        </div>
+                        <div className="admin-stat-icon">♟</div>
 
                         <div>
-
                             <strong>
                                 {loadingStudents
                                     ? "..."
                                     : totalStudents}
                             </strong>
 
-                            <span>
-                                Total Students
-                            </span>
+                            <span>Total Students</span>
 
-                            <p>
-                                Registered students
-                            </p>
+                            <p>Registered students</p>
 
+                            {studentsError && (
+                                <small role="alert">
+                                    {studentsError}
+                                </small>
+                            )}
                         </div>
-
                     </div>
 
-
-                    {/* ACTIVE STUDENTS */}
-
                     <div className="admin-stat-card">
-
-                        <div className="admin-stat-icon">
-                            ✓
-                        </div>
+                        <div className="admin-stat-icon">✓</div>
 
                         <div>
-
                             <strong>
                                 {loadingStudents
                                     ? "..."
                                     : activeStudents}
                             </strong>
 
-                            <span>
-                                Active Students
-                            </span>
+                            <span>Active Students</span>
 
-                            <p>
-                                Currently active
-                            </p>
-
+                            <p>Currently active</p>
                         </div>
-
                     </div>
-
-
-                    {/* PROGRESS */}
 
                     <div className="admin-stat-card">
-
-                        <div className="admin-stat-icon">
-                            %
-                        </div>
+                        <div className="admin-stat-icon">%</div>
 
                         <div>
-
-                            <strong>
-                                72%
-                            </strong>
-
-                            <span>
-                                Avg. Progress
-                            </span>
-
-                            <p>
-                                Overall completion
-                            </p>
-
+                            <strong>72%</strong>
+                            <span>Avg. Progress</span>
+                            <p>Overall completion</p>
                         </div>
-
                     </div>
-
                 </section>
 
-
-                {/* =========================
-                    MANAGEMENT
-                ========================= */}
+                {/* MANAGEMENT */}
 
                 <section className="admin-management">
-
                     <div className="admin-section-heading">
-
                         <div>
-
-                            <span>
-                                MANAGEMENT
-                            </span>
-
-                            <h2>
-                                Quick Actions
-                            </h2>
-
+                            <span>MANAGEMENT</span>
+                            <h2>Quick Actions</h2>
                         </div>
-
                     </div>
 
-
                     <div className="admin-action-grid">
-
 
                         {/* ADD PROBLEM */}
 
@@ -400,30 +296,23 @@ function Admin() {
                             to="/add-problem"
                             className="admin-action-card"
                         >
-
                             <div className="admin-action-icon">
                                 +
                             </div>
 
                             <div>
-
-                                <h3>
-                                    Add Coding Problem
-                                </h3>
+                                <h3>Add Coding Problem</h3>
 
                                 <p>
                                     Create a new coding problem
                                     for students.
                                 </p>
-
                             </div>
 
                             <span className="admin-action-arrow">
                                 →
                             </span>
-
                         </Link>
-
 
                         {/* MANAGE PROBLEMS */}
 
@@ -431,169 +320,99 @@ function Admin() {
                             to="/admin/problems"
                             className="admin-action-card"
                         >
-
                             <div className="admin-action-icon">
                                 ◈
                             </div>
 
                             <div>
-
-                                <h3>
-                                    Manage Problems
-                                </h3>
+                                <h3>Manage Problems</h3>
 
                                 <p>
                                     View and manage all coding
                                     problems.
                                 </p>
-
                             </div>
 
                             <span className="admin-action-arrow">
                                 →
                             </span>
-
                         </Link>
 
-
-                        {/* STUDENTS */}
+                        {/* MANAGE STUDENTS */}
 
                         <Link
                             to="/students"
                             className="admin-action-card"
                         >
-
                             <div className="admin-action-icon">
                                 ♟
                             </div>
 
                             <div>
-
-                                <h3>
-                                    Manage Students
-                                </h3>
+                                <h3>Manage Students</h3>
 
                                 <p>
                                     Monitor student accounts
                                     and activity.
                                 </p>
-
                             </div>
 
                             <span className="admin-action-arrow">
                                 →
                             </span>
-
                         </Link>
 
                     </div>
-
                 </section>
 
-
-                {/* =========================
-                    PLATFORM OVERVIEW
-                ========================= */}
+                {/* PLATFORM OVERVIEW */}
 
                 <section className="admin-overview">
-
                     <div className="admin-overview-header">
-
                         <div>
-
-                            <span>
-                                PLATFORM OVERVIEW
-                            </span>
-
-                            <h2>
-                                CodeTrack Activity
-                            </h2>
-
+                            <span>PLATFORM OVERVIEW</span>
+                            <h2>CodeTrack Activity</h2>
                         </div>
 
                         <span className="admin-status">
                             ● System Active
                         </span>
-
                     </div>
-
 
                     <div className="admin-overview-grid">
-
                         <div>
-
-                            <strong>
-                                {totalProblems}
-                            </strong>
-
-                            <span>
-                                Coding Problems
-                            </span>
-
+                            <strong>{totalProblems}</strong>
+                            <span>Coding Problems</span>
                         </div>
 
-
                         <div>
-
-                            <strong>
-                                {totalStudents}
-                            </strong>
-
-                            <span>
-                                Registered Students
-                            </span>
-
+                            <strong>{totalStudents}</strong>
+                            <span>Registered Students</span>
                         </div>
 
-
                         <div>
-
-                            <strong>
-                                {activeStudents}
-                            </strong>
-
-                            <span>
-                                Active Students
-                            </span>
-
+                            <strong>{activeStudents}</strong>
+                            <span>Active Students</span>
                         </div>
 
-
                         <div>
-
-                            <strong>
-                                72%
-                            </strong>
-
-                            <span>
-                                Average Progress
-                            </span>
-
+                            <strong>72%</strong>
+                            <span>Average Progress</span>
                         </div>
-
                     </div>
-
                 </section>
 
             </main>
 
-
-            {/* =========================
-                FOOTER
-            ========================= */}
+            {/* FOOTER */}
 
             <footer className="admin-footer">
-
-                <span>
-                    © 2026 CodeTrack
-                </span>
+                <span>© 2026 CodeTrack</span>
 
                 <span>
                     Coding Progress Management System
                 </span>
-
             </footer>
-
         </div>
     );
 }
